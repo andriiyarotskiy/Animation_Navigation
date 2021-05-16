@@ -4,7 +4,7 @@ import {Button, Text, View, StyleSheet} from 'react-native';
 const secondScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
-      <Text>Second Screeb</Text>
+      <Text>Second screen</Text>
       <Button title="Btn" onPress={() => alert('click')} />
     </View>
   );

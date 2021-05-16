@@ -32,15 +32,55 @@ const MyTabs = () => {
         options={{
           tabBarIcon: ({focused}) => (
             <View>
-              <Text>FIRST</Text>
+              <Text>One</Text>
             </View>
           ),
         }}
       />
-      <Tab.Screen name="secondScreen" component={secondScreen} />
-      <Tab.Screen name="thirdScreen" component={thirdScreen} />
-      <Tab.Screen name="fourScreen" component={fourScreen} />
-      <Tab.Screen name="fiveScreen" component={fiveScreen} />
+      <Tab.Screen
+        name="secondScreen"
+        component={secondScreen}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View>
+              <Text>Two</Text>
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="thirdScreen"
+        component={thirdScreen}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View>
+              <Text>Three</Text>
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="fourScreen"
+        component={fourScreen}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View>
+              <Text>Four</Text>
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="fiveScreen"
+        component={fiveScreen}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View>
+              <Text>Five</Text>
+            </View>
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 };
