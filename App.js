@@ -10,7 +10,7 @@ import type {Node} from 'react';
 import React from 'react';
 import {StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
-import MyTabs from './src/navigation/tabs';
+import ChatStackNavigator from './src/navigations/Navigator';
 
 const App: () => Node = () => {
   /** Progress Bar Loader **/
@@ -29,7 +29,7 @@ const App: () => Node = () => {
 
   return (
     <NavigationContainer>
-      <MyTabs />
+      <ChatStackNavigator />
     </NavigationContainer>
 
     /*    <View style={styles.container}>
