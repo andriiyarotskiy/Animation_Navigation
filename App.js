@@ -8,43 +8,16 @@
 import 'react-native-gesture-handler';
 import type {Node} from 'react';
 import React from 'react';
-import {StyleSheet} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import MyTabs from './src/navigation/tabs';
+import Navigator from './src/navigation';
+import {SafeAreaView, StatusBar} from 'react-native';
 
 const App: () => Node = () => {
-  /** Progress Bar Loader **/
-  /*  const [index, setIndex] = useState(0);
-  useEffect(() => {
-    // if (index !== 5) {
-    const interval = setInterval(() => {
-      setIndex((index + 1) % (5 + 1));
-    }, 500);
-    return () => {
-      clearInterval(interval);
-    };
-    // }
-  }, [index]);*/
-  /** Progress Bar Loader **/
-
   return (
-    <NavigationContainer>
-      <MyTabs />
-    </NavigationContainer>
-
-    /*    <View style={styles.container}>
-      <ProgressBarLoad step={index} steps={5} height={20} />
-    </View>*/
+    <SafeAreaView style={{flex: 1}}>
+      <StatusBar backgroundColor="#f4f5f5" barStyle="dark-content" />
+      <Navigator />
+    </SafeAreaView>
   );
 };
 
 export default App;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    padding: 20,
-  },
-});
