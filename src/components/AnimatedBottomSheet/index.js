@@ -14,7 +14,9 @@ const AnimatedBottomSheet = ({sheetRef, content}) => {
   const renderContent = () => (
     <View style={styles.content}>
       <ScrollView>
-        <Text>{content ? content : 'Swipe down to close'}</Text>
+        <Text style={styles.contentText}>
+          {content ? content : 'Swipe down to close'}
+        </Text>
       </ScrollView>
     </View>
   );
@@ -35,26 +37,44 @@ export default AnimatedBottomSheet;
 
 const styles = StyleSheet.create({
   headerStyle: {
-    backgroundColor: 'green',
-    width: '40%',
+    bottom: -0.8,
+    width: '35%',
     height: 50,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
     marginHorizontal: (width / 100) * 3,
-    opacity: 0.8,
+    opacity: 0.95,
+    shadowRadius: 6,
+    shadowOffset: {width: 0, height: 3},
+    shadowColor: '#00000029',
+    shadowOpacity: 1,
+    elevation: 4,
+    backgroundColor: '#ffffff', // invisible color
   },
   headerText: {
     textAlign: 'center',
-    fontSize: 18,
-    fontWeight: 'bold',
-    paddingTop: 5,
+    fontSize: 20,
+    fontFamily: 'Ubuntu-Bold',
+    color: '#00084b',
+    paddingTop: 7,
   },
   content: {
-    backgroundColor: 'pink',
     padding: 16,
     height: '100%',
-    borderTopRightRadius: 10,
+    borderTopRightRadius: 8,
     marginHorizontal: (width / 100) * 3,
-    opacity: 0.8,
+    opacity: 0.95,
+    shadowRadius: 6,
+    shadowOffset: {width: 0, height: 3},
+    shadowColor: '#00000029',
+    shadowOpacity: 1,
+    elevation: 4,
+    backgroundColor: '#ffffff', // invisible color
+  },
+  contentText: {
+    fontFamily: 'Ubuntu-Regular',
+    fontSize: 16,
+    color: '#00084b',
+    lineHeight: 24,
   },
 });

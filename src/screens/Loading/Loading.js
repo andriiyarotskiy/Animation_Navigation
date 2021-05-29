@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import ProgressBar from '../../components/ProgressBar';
+import {ProgressBar} from '../../components';
 
 const LoadingScreen = ({navigation}) => {
   /** Progress Bar Loader **/

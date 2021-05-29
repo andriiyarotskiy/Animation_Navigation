@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Button,
-  Image,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {SharedElement} from 'react-navigation-shared-element';
 
 const FreePlayScreen = ({navigation, route}) => {

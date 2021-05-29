@@ -2,13 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Animated, View, StyleSheet} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-export const ProgressBar = ({
-  steps,
-  height,
-  step,
-  backgroundColor,
-  borderColor,
-}) => {
+const ProgressBar = ({steps, height, step, backgroundColor, borderColor}) => {
   const [width, setWidth] = useState(0);
   const animatedValue = useRef(new Animated.Value(-1000)).current;
   const reactive = useRef(new Animated.Value(-1000)).current;

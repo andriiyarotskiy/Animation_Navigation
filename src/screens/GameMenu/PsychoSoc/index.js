@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
+  Button,
   Dimensions,
   FlatList,
   StyleSheet,
@@ -15,21 +16,43 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import {MessageAnswer, MessageQuestion, QuestionBox} from '../components';
+import {MessageAnswer, MessageQuestion, QuestionBox} from '../../../components';
+import {useSafeAreaInsets, SafeAreaView} from 'react-native-safe-area-context';
+
 // FakeResponse & FakeRequest
 const FakeQuestions = [
-  {message: 'Some question 1'.repeat(5), id: '1', selected: false},
-  {message: 'Some question 2'.repeat(5), id: '2', selected: false},
+  {
+    message: 'Heb je de medicatie genomen zoals voorgeschreven?',
+    id: '1',
+    selected: false,
+  },
+  {message: 'Some question 2', id: '2', selected: false},
   {message: 'Some question 3', id: '3', selected: false},
-  {message: 'Some question 4', id: '4', selected: false},
+  {
+    message: 'Some question 4',
+    id: '4',
+    selected: false,
+  },
   {message: 'Some question 5', id: '5', selected: false},
 ];
 const FakeQuestionsFromBackEnd = [
-  {message: 'Other question 1'.repeat(5), id: '6', selected: false},
-  {message: 'Some question 2'.repeat(5), id: '7', selected: false},
-  {message: 'Some question 3'.repeat(5), id: '8', selected: false},
-  {message: 'Some question 4', id: '9', selected: false},
-  {message: 'Some question 5', id: '10', selected: false},
+  {
+    message: 'Heb je de medicatie genomen zoals voorgeschreven?',
+    id: '6',
+    selected: false,
+  },
+  {message: 'Snoep jij veel tussendoor?', id: '7', selected: false},
+  {message: 'Heb je een baan en zo ja waar werk je?', id: '8', selected: false},
+  {
+    message: 'Eet je anders dan voorheen nu je weet dat je diabetes hebt?',
+    id: '9',
+    selected: false,
+  },
+  {
+    message: 'Ben je sneller moe?',
+    id: Math.random().toString(),
+    selected: false,
+  },
 ];
 const getResponseOnQuestion = async () => {
   try {
@@ -58,6 +81,8 @@ const getNewQuestions = async () => {
 };
 
 const TestScreen = ({navigation}) => {
+  const {top} = useSafeAreaInsets(); // высота челка
+
   const windowHeight = useWindowDimensions().height; // 760 height window
 
   /** Initial Value for Animations**/
@@ -73,6 +98,7 @@ const TestScreen = ({navigation}) => {
   const [measure, setMeasure] = useState(null);
   const [questionPosition, setQuestionPosition] = useState(null);
 
+  const [isActiveScrool, setIsActiveScroll] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isNewQuestions, setIsNewQuestions] = useState(false);
   const [newAnswerMessage, setNewAnswerMessage] = useState(false);
@@ -90,15 +116,29 @@ const TestScreen = ({navigation}) => {
           setIsLoading(false);
         });
 
-      setTimeout(() => {
-        flatlistRef.current.scrollToEnd({animating: true});
+      const clearID = setTimeout(() => {
+        console.log('scroll');
+        if (flatlistRef.current) {
+          flatlistRef.current.scrollToEnd({animating: true});
+        }
       }, 6000); // 6000 = questionsBlock.value(4000) + resolve promise(2000)
+      // return () => {
+      //   clearTimeout(clearID);
+      // };
     }
 
     if (isNewQuestions) {
       getNewQuestions().then(res => {
         setFakeQuestions(res);
       });
+    }
+    if (!isActiveScrool) {
+      const timeOutID = setTimeout(() => {
+        setIsActiveScroll(true);
+      }, 2000);
+      return () => {
+        clearTimeout(timeOutID);
+      };
     }
   }, [isNewQuestions, isLoading]);
 
@@ -116,15 +156,17 @@ const TestScreen = ({navigation}) => {
     const selected = fakeQuestions.map(obj =>
       obj.id === id ? {...obj, selected: true} : obj,
     );
-    const selectedQuestion = selected.find(obj => obj.id === id);
 
+    const selectedQuestion = selected.find(obj => obj.id === id);
     setFakeQuestions(selected);
     setUserChoises(selectedQuestion);
     setState([...state, selectedQuestion]);
     setIsLoading(true);
-    setIsNewQuestions(true);
 
-    questionsBlock.value = withTiming(windowHeight, {duration: 1000});
+    setIsNewQuestions(true);
+    setIsActiveScroll(false);
+
+    questionsBlock.value = withTiming(windowHeight, {duration: 750});
   };
 
   /** Animate question Question Box **/
@@ -142,11 +184,11 @@ const TestScreen = ({navigation}) => {
   const animateStyle = useAnimatedStyle(() => {
     return {
       top: withSequence(
-        withTiming(measure ? measure.top : 0, {duration: 0}),
+        withTiming(height, {duration: 0}),
         withTiming(
-          questionPosition ? questionPosition.top : 0,
+          questionPosition ? questionPosition.top - (100 + top) : 0,
           {
-            duration: 1000,
+            duration: 500,
           },
           isFinished => {
             if (isFinished && !!userChoises) {
@@ -159,12 +201,12 @@ const TestScreen = ({navigation}) => {
       left: withSequence(
         withTiming(measure ? measure.left : 0, {duration: 0}),
         withTiming(questionPosition ? questionPosition.left : 0, {
-          duration: 1000,
+          duration: 500,
         }),
       ),
       opacity: withSequence(
         withTiming(questionPosition ? 1 : 0, withTiming(1, {duration: 500})),
-        withDelay(1000, withTiming(0, {duration: 300})),
+        withDelay(1000, withTiming(0, {duration: 1000})),
       ),
     };
   });
@@ -176,17 +218,18 @@ const TestScreen = ({navigation}) => {
       <View style={styles.main}>
         <FlatList
           ref={flatlistRef}
+          // onContentSizeChange={() =>
+          //   flatlistRef.current.scrollToEnd({animated: true})
+          // }
           data={state}
           keyExtractor={item => item.id}
+          scrollEnabled={isActiveScrool}
           style={{flex: 1}}
           ListHeaderComponent={
-            <View style={{marginVertical: 30}}>
-              <Text style={{fontSize: 25, color: '#FFF'}}>
-                Psychosociale Anamnese
-              </Text>
-              <Text style={{color: '#fff'}}>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Optio,
-                veniam!
+            <View style={styles.listHeaderStyle}>
+              <Text style={styles.headerTitle}>Psychosociale Anamnese</Text>
+              <Text style={styles.headerSubTitle}>
+                Kies de alleen de vragen die volgens jouw belangrijk zijn.
               </Text>
             </View>
           }
@@ -198,7 +241,6 @@ const TestScreen = ({navigation}) => {
                   text={item.message}
                   selected={item.selected}
                   setQuestionPosition={setQuestionPosition}
-                  bottom={state[state.length - 1].id === item.id ? 150 : 0}
                 />
               );
             } else {
@@ -208,37 +250,37 @@ const TestScreen = ({navigation}) => {
                   text={item.message}
                   isLoading={isLoading}
                   newAnswerMessage={newAnswerMessage}
-                  bottom={state[state.length - 1].id === item.id ? 150 : 0}
                 />
               );
             }
           }}
+          ListFooterComponent={
+            <Animated.View style={[styles.boxContainer, animateQuestionsBlock]}>
+              {fakeQuestions.map((el, index) => (
+                <QuestionBox
+                  key={el.id}
+                  questionsArray={state}
+                  id={el.id}
+                  selected={el.selected}
+                  question={el.message}
+                  addQuestion={addQuestion}
+                  setMeasure={setMeasure}
+                />
+              ))}
+            </Animated.View>
+          }
         />
-        <Animated.View style={[styles.boxContainer, animateQuestionsBlock]}>
-          {fakeQuestions.map((el, index) => (
-            <QuestionBox
-              key={el.id}
-              questionsArray={state}
-              id={el.id}
-              selected={el.selected}
-              question={el.message}
-              addQuestion={addQuestion}
-              setMeasure={setMeasure}
-            />
-          ))}
-        </Animated.View>
         {userChoises?.selected && measure?.top && (
           <Animated.View style={[{position: 'absolute'}, animateStyle]}>
             <View style={[styles.selectQuestion]}>
-              <Text style={{fontSize: 16, color: '#ffffff'}}>
-                {userChoises.message}
-              </Text>
+              <Text style={styles.textQuestion}>{userChoises.message}</Text>
               <View style={styles.rightArrow} />
               <View style={styles.rightArrowOverlap} />
             </View>
           </Animated.View>
         )}
       </View>
+      <Button title="Back" onPress={() => navigation.goBack()} />
     </View>
   );
 };
@@ -254,74 +296,75 @@ const styles = StyleSheet.create({
   },
   main: {
     backgroundColor: '#635f5f',
-    flex: 0.85,
-    paddingHorizontal: 20,
+    flex: 0.9,
+    // paddingHorizontal: 45,
     borderBottomLeftRadius: 35,
     borderBottomRightRadius: 35,
   },
-  boxContainer: {},
+  boxContainer: {
+    marginTop: 30,
+    marginHorizontal: 45,
+  },
+
+  listHeaderStyle: {
+    marginHorizontal: 45,
+    marginTop: 25,
+  },
+  headerTitle: {
+    fontFamily: 'Roboto-Bold',
+    fontSize: 26,
+    color: '#ffffff',
+  },
+  headerSubTitle: {
+    marginTop: 15,
+    marginBottom: 25,
+    fontFamily: 'Roboto-Regular',
+    fontSize: 16,
+    color: '#ffffff',
+  },
 
   // selected item
 
   selectQuestion: {
-    backgroundColor: '#0078fe',
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 10, // marginBottom should be the same as Index.box
-    maxWidth: 300,
+    backgroundColor: '#00084b',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    maxWidth: 288,
     alignSelf: 'flex-end',
-  },
-  rightArrow: {
-    position: 'absolute',
-    backgroundColor: '#0078fe',
-    width: 10,
-    height: 30,
-    bottom: -20,
-    right: 0,
-  },
 
-  rightArrowOverlap: {
-    position: 'absolute',
-    backgroundColor: '#635f5f',
-    width: 10,
-    height: 25,
-    bottom: -25,
-    borderTopRightRadius: 50,
-    right: 0,
+    shadowColor: '#00000029',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowRadius: 6,
+    shadowOpacity: 1,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: '#5466fc',
   },
+  textQuestion: {
+    fontFamily: 'Roboto-Regular',
+    fontSize: 16,
+    color: '#ffffff',
+  },
+  // rightArrow: {
+  //   position: 'absolute',
+  //   backgroundColor: '#0078fe',
+  //   width: 10,
+  //   height: 30,
+  //   bottom: -20,
+  //   right: 0,
+  // },
+  //
+  // rightArrowOverlap: {
+  //   position: 'absolute',
+  //   backgroundColor: '#635f5f',
+  //   width: 10,
+  //   height: 25,
+  //   bottom: -25,
+  //   borderTopRightRadius: 50,
+  //   right: 0,
+  // },
 });
-
-// <ScrollView ref={flatlistRef}>
-//   <View style={{marginVertical: 30}}>
-//     <Text style={{fontSize: 25, color: '#FFF'}}>
-//       Psychosociale Anamnese
-//     </Text>
-//     <Text style={{color: '#fff'}}>
-//       Lorem ipsum dolor sit amet, consectetur adipisicing elit. Optio,
-//       veniam!
-//     </Text>
-//   </View>
-//   {state.map((item, index) => {
-//     if (!(index % 2)) {
-//       return (
-//         <MessageQuestion
-//           key={item.id}
-//           text={item.message}
-//           selected={item.selected}
-//           setQuestionPosition={setQuestionPosition}
-//           bottom={state[state.length - 1].id === item.id ? 150 : 0}
-//         />
-//       );
-//     } else {
-//       return (
-//         <Index
-//           key={item.id}
-//           text={item.message}
-//           isLoading={isLoading}
-//           newAnswerMessage={newAnswerMessage}
-//           bottom={state[state.length - 1].id === item.id ? 150 : 0}
-//         />
-//       );
-//     }
-//   })}
-// </ScrollView>

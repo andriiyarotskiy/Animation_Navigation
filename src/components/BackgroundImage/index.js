@@ -8,7 +8,7 @@ const image = {
 const BackgroundImage = ({children}) => (
   <View style={styles.container}>
     {/*<ImageBackground source={image} style={styles.image}>*/}
-      <View style={{flex: 1}}>{children}</View>
+    <View style={{flex: 1}}>{children}</View>
     {/*</ImageBackground>*/}
   </View>
 );

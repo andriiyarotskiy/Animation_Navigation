@@ -3,26 +3,16 @@ const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
 export const styles = StyleSheet.create({
-  headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  header: {
+    marginHorizontal: 18,
     marginTop: 15,
   },
+  headerContent: {},
   appNameStyle: {
     fontFamily: 'Ubuntu-Bold',
     fontSize: 32,
     lineHeight: 32,
     color: '#00084b',
-  },
-  user: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  userName: {
-    fontFamily: 'Ubuntu-Bold',
-    fontSize: 12,
-    color: '#00084b',
-    marginRight: 10,
   },
   mainContent: {
     flex: 1,

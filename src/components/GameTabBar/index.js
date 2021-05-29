@@ -16,15 +16,15 @@ const labels = ['One', 'Two', 'Three', 'Four', 'Five'];
 const customStyles = {
   stepIndicatorSize: 20,
   currentStepIndicatorSize: 30,
-  separatorStrokeWidth: 3,
-  stepIndicatorCurrentColor: 'blue',
+  separatorStrokeWidth: 2,
+  stepIndicatorCurrentColor: '#5466fc',
   stepStrokeCurrentColor: 'transparent', // border color current step
-  stepStrokeFinishedColor: 'purple',
-  stepStrokeUnFinishedColor: 'purple',
-  separatorFinishedColor: 'purple',
-  stepIndicatorFinishedColor: 'green',
-  separatorUnFinishedColor: 'purple',
-  stepIndicatorUnFinishedColor: 'blue',
+  stepStrokeFinishedColor: '#5466fc',
+  stepStrokeUnFinishedColor: '#5466fc',
+  separatorFinishedColor: '#5466fc',
+  stepIndicatorFinishedColor: '#5466fc',
+  separatorUnFinishedColor: '#2130b1',
+  stepIndicatorUnFinishedColor: '#2130b1',
   stepIndicatorLabelFontSize: 0,
   currentStepIndicatorLabelFontSize: 0,
   labelColor: '#FFF',
@@ -32,7 +32,7 @@ const customStyles = {
 };
 const {width, height} = Dimensions.get('window');
 
-const GameMenu = () => {
+const GameTabBar = () => {
   const [currentPosition, setCurrentPosition] = useState(0);
 
   /** Animated Bottom Sheet **/
@@ -41,7 +41,7 @@ const GameMenu = () => {
 
   return (
     <View>
-      <AnimatedBottomSheet sheetRef={sheetRef} content={'Lorem'.repeat(500)} />
+      <AnimatedBottomSheet sheetRef={sheetRef} content={'Lorem '.repeat(500)} />
       <View style={styles.container}>
         <View style={styles.menuSection}>
           <View style={styles.iconContainer}>
@@ -59,7 +59,7 @@ const GameMenu = () => {
           <View style={styles.listSection}>
             <StepIndicator
               customStyles={customStyles}
-              currentPosition={currentPosition + 1}
+              currentPosition={currentPosition}
               labels={labels}
               onPress={step => setCurrentPosition(step)}
               renderLabel={({position, label}) => (
@@ -85,12 +85,12 @@ const GameMenu = () => {
   );
 };
 
-export default GameMenu;
+export default GameTabBar;
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#aeaeae',
-    height: height * 0.1,
+    height: height * 0.1, // 10% height
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   },
   menuSection: {
     width: width * 0.35,
-    backgroundColor: 'pink',
+    // backgroundColor: 'pink',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -116,27 +116,27 @@ const styles = StyleSheet.create({
   // Left Arrow
   leftArrowContainer: {
     width: width * 0.2,
-    height: 3,
-    backgroundColor: 'purple',
+    height: 2,
+    backgroundColor: '#5466fc',
     position: 'absolute',
     left: -15,
-    top: -21,
+    top: -20,
     zIndex: -1,
   },
   topLineArrow: {
-    top: -4.5,
-    left: -3,
+    top: -5,
+    left: -2,
     width: 15,
-    height: 3,
-    backgroundColor: 'purple',
+    height: 2,
+    backgroundColor: '#5466fc',
     transform: [{rotate: '-45deg'}],
   },
   bottomLineArrow: {
-    top: 1.5,
+    top: 3,
     left: -3,
     width: 15,
-    height: 3,
-    backgroundColor: 'purple',
+    height: 2,
+    backgroundColor: '#5466fc',
     transform: [{rotate: '45deg'}],
   },
 });

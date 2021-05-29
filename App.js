@@ -9,14 +9,19 @@ import 'react-native-gesture-handler';
 import type {Node} from 'react';
 import React from 'react';
 import Navigator from './src/navigation';
-import {SafeAreaView, StatusBar} from 'react-native';
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
+import {StatusBar, View} from 'react-native';
 
 const App: () => Node = () => {
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <StatusBar backgroundColor="#f4f5f5" barStyle="dark-content" />
-      <Navigator />
-    </SafeAreaView>
+    <>
+      <SafeAreaProvider>
+        <SafeAreaView style={{flex: 1}}>
+          <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
+          <Navigator />
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </>
   );
 };
 

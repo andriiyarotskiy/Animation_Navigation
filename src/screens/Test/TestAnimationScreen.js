@@ -1,20 +1,11 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {
-  Button,
-  FlatList,
-  SafeAreaView,
-  Text,
-  TouchableWithoutFeedback,
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  TouchableHighlight,
   Image,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import IronMan from './icons/ironMan.svg';
-import Animated from 'react-native-reanimated';
-import BottomMenu from '../../components/MainMenu/MainMenu';
-import BackgroundImage from '../../components/BackgroundImage';
 import {SharedElement} from 'react-navigation-shared-element';
 
 const state = ['item 1', 'item 2', 'item 3', 'item 4', 'item 5'];

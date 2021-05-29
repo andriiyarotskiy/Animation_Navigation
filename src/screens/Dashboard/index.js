@@ -7,11 +7,9 @@ import {
   View,
 } from 'react-native';
 import {styles} from './styles';
-import BackgroundImage from '../../components/BackgroundImage';
-import MainMenu from '../../components/MainMenu/MainMenu';
 import {SharedElement} from 'react-navigation-shared-element';
-import ProgressBar from '../../components/ProgressBar';
 import {numberWithDot} from '../../helpers/helpersFunctions';
+import {BackgroundImage, ProgressBar, TabBar, UserCard} from '../../components';
 
 const image = 'https://reactnative.dev/img/tiny_logo.png';
 const data = [{image: image}, {image: image}];
@@ -21,22 +19,20 @@ const DashboardScreen = ({route, navigation}) => {
 
   return (
     <BackgroundImage>
-      <View style={{marginHorizontal: 18}}>
+      <View style={styles.header}>
         <View style={styles.headerContent}>
           <View>
             <Text style={styles.appNameStyle}>InPraktijk</Text>
           </View>
-          <View style={styles.user}>
-            <Text style={styles.userName}>Andreas</Text>
-            <Image
-              style={{
-                width: 32,
-                height: 32,
-                resizeMode: 'cover',
-                borderRadius: 32,
-              }}
-              source={{uri: image}}
-            />
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: -5,
+              minWidth: 200,
+              alignItems: 'flex-end',
+            }}>
+            <UserCard name="Andreas" userAva={image} />
           </View>
         </View>
       </View>
@@ -44,7 +40,9 @@ const DashboardScreen = ({route, navigation}) => {
         <View style={styles.rowOfBalls}>
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => navigation.navigate('WaitRoom', {item: data[0]})}>
+            onPress={() =>
+              navigation.navigate('WaitRoom', {sharedItem: data[0]})
+            }>
             <SharedElement id={'leftMenuImage'}>
               <Image
                 style={{
@@ -58,7 +56,7 @@ const DashboardScreen = ({route, navigation}) => {
             </SharedElement>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.push('FreePlay', {item: data[1]})}>
+            onPress={() => navigation.push('FreePlay', {sharedItem: data[1]})}>
             <View style={styles.item}>
               <SharedElement id={'rightMenuImage'}>
                 <Image
@@ -125,18 +123,9 @@ const DashboardScreen = ({route, navigation}) => {
             </View>
           </View>
         </View>
-        {/*<View style={styles.boxContainer} />*/}
-        {/*<Button*/}
-        {/*  title="Go Test"*/}
-        {/*  onPress={() => navigation.navigate('TestScreen')}*/}
-        {/*/>*/}
-        {/*<Button*/}
-        {/*  title="Test Shared"*/}
-        {/*  onPress={() => navigation.navigate('TestShared')}*/}
-        {/*/>*/}
       </View>
-      <MainMenu navigation={navigation} sharedItem={data[0]} />
-      {/*<GameMenu />*/}
+      <TabBar navigation={navigation} sharedItem={data[0]} />
+      {/*<GameTabBar />*/}
     </BackgroundImage>
   );
 };

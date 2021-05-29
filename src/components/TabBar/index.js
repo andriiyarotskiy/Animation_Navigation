@@ -36,7 +36,7 @@ const Tab = ({title, onPress}) => {
   );
 };
 
-const MainMenu = props => {
+const TabBar = props => {
   const {navigation, sharedItem} = props;
   const routesState = [
     {nameScreen: 'Dashboard', label: 'Home'},
@@ -52,7 +52,7 @@ const MainMenu = props => {
           key={Math.random().toString()}
           title={tab.label}
           onPress={() =>
-            navigation.navigate(tab.nameScreen, {item: sharedItem})
+            navigation.navigate(tab.nameScreen, {sharedItem: sharedItem})
           }
         />
       ))}
@@ -60,7 +60,7 @@ const MainMenu = props => {
   );
 };
 
-export default MainMenu;
+export default TabBar;
 
 const styles = StyleSheet.create({
   container: {
