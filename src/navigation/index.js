@@ -1,5 +1,5 @@
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {
   CardStyleInterpolators,
   createStackNavigator,
@@ -124,8 +124,15 @@ const Main = () => {
 };
 
 const Navigator = () => {
+  const MyTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: '#FFF',
+    },
+  };
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={MyTheme}>
       <RootStack.Navigator headerMode="none" initialRouteName="Loading">
         <RootStack.Screen
           name="Loading"
