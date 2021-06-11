@@ -5,6 +5,7 @@ import FastImage from 'react-native-fast-image';
 import {
   AnimatedBottomSheet,
   BackgroundImage,
+  CircleScoreBoard,
   GameTabBar,
 } from '../../components';
 
@@ -43,8 +44,8 @@ const GameMenuScreen = ({navigation, route}) => {
             <Text style={styles.subTitle}>{item.subTitle}</Text>
           </SharedElement>
         </View>
-        <View style={styles.timerStyle}>
-          <Text style={styles.countText}>15</Text>
+        <View style={styles.scoreBoard}>
+          <CircleScoreBoard progress={10} />
         </View>
       </View>
       {/*Pacient Card*/}
@@ -78,6 +79,14 @@ const GameMenuScreen = ({navigation, route}) => {
           onPress={() => navigation.navigate('GameStack', {screen: 'Medical'})}>
           <View style={styles.menuItem}>
             <Text style={styles.menuText}>Medische Anamnese</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('GameStack', {screen: 'DifDiagnose'})
+          }>
+          <View style={styles.menuItem}>
+            <Text style={styles.menuText}>Differentiaal Diagnose</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -131,22 +140,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000a42',
   },
-  timerStyle: {
+  scoreBoard: {
     position: 'absolute',
     right: 0,
-    width: 73,
-    height: 73,
-    borderWidth: 1,
-    borderColor: '#000a42',
-    borderRadius: 75,
-    backgroundColor: '#ffffff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  countText: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 20,
-    color: '#000a42',
   },
   // PACIENT CARD
   header: {

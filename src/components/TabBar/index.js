@@ -1,25 +1,26 @@
 import React from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
-import IronMan from './icons/ironMan.svg';
-import HomeIcon from './icons/home.svg';
-import HomeClinic from './icons/home-clinic.svg';
-import ManInMask from './icons/face-mask-man.svg';
-import MailIcon from './icons/mail.svg';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faClinicMedical, faMedal} from '@fortawesome/free-solid-svg-icons';
+import HomeIcon from './icons/AI_home.svg';
+import UserAI from './icons/AI_user.svg';
+import MailIcon from './icons/AI_mail.svg';
 
-const renderTabIcons = (title, focused) => {
-  switch (title) {
+const renderTabIcons = (label, focused) => {
+  switch (label) {
     case 'Home':
-      return <HomeIcon width={50} height={50} fill={'#000'} />;
+      return <HomeIcon width={35} height={35} />;
     case 'Wait Room':
-      return <HomeClinic width={50} height={50} fill={'#000'} />;
-    case 'Vrienden':
-      return <ManInMask width={50} height={50} fill={'#000'} />;
-    case 'Berichten':
       return (
-        <MailIcon style={{bottom: -5}} width={50} height={50} fill={'#000'} />
+        <FontAwesomeIcon icon={faClinicMedical} size={35} color="#2130b1" />
       );
+    // return <Test width={50} height={50} fill={'#000'} />;
+    case 'Vrienden':
+      return <UserAI width={35} height={35} />;
+    case 'Berichten':
+      return <MailIcon style={{bottom: -5}} width={35} height={35} />;
     case 'Free play':
-      return <IronMan width={50} height={50} fill={'#000'} />;
+      return <FontAwesomeIcon icon={faMedal} size={25} color="#2130b1" />;
     default:
       return null;
   }
@@ -41,7 +42,7 @@ const TabBar = props => {
   const routesState = [
     {nameScreen: 'Dashboard', label: 'Home'},
     {nameScreen: 'WaitRoom', label: 'Wait Room'},
-    {nameScreen: 'TestScreen', label: 'Vrienden'},
+    {nameScreen: 'Test', label: 'Vrienden'},
     {nameScreen: 'TestAnimation', label: 'Berichten'},
     {nameScreen: 'FreePlay', label: 'Free play'},
   ];

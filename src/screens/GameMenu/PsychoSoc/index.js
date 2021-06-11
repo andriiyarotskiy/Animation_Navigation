@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
-  Button,
   Dimensions,
   FlatList,
   StyleSheet,
@@ -16,8 +15,15 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import {MessageAnswer, MessageQuestion, QuestionBox} from '../../../components';
-import {useSafeAreaInsets, SafeAreaView} from 'react-native-safe-area-context';
+import {
+  BackgroundImage,
+  GameTabBar,
+  MessageAnswer,
+  MessageQuestion,
+  QuestionBox,
+} from '../../../components';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import QuestionAngle from './icon/questionAngle.svg';
 
 // FakeResponse & FakeRequest
 const FakeQuestions = [
@@ -80,8 +86,8 @@ const getNewQuestions = async () => {
   }
 };
 
-const TestScreen = ({navigation}) => {
-  const {top} = useSafeAreaInsets(); // высота челка
+const PsychoSocScreen = ({navigation}) => {
+  const {top} = useSafeAreaInsets(); // высота челки
 
   const windowHeight = useWindowDimensions().height; // 760 height window
 
@@ -109,21 +115,18 @@ const TestScreen = ({navigation}) => {
         .then(res => {
           setState(s => [...s, res]);
           setNewAnswerMessage(true);
-          flatlistRef.current.scrollToEnd({animating: true});
+          flatlistRef.current?.scrollToEnd({animating: true});
           questionsBlock.value = withDelay(4000, withSpring(0));
         })
         .finally(() => {
           setIsLoading(false);
         });
 
-      const clearID = setTimeout(() => {
-        console.log('scroll');
-        if (flatlistRef.current) {
-          flatlistRef.current.scrollToEnd({animating: true});
-        }
+      setTimeout(() => {
+        flatlistRef.current?.scrollToEnd({animating: true});
       }, 6000); // 6000 = questionsBlock.value(4000) + resolve promise(2000)
       // return () => {
-      //   clearTimeout(clearID);
+      //   clearTimeout(timeOutID);
       // };
     }
 
@@ -215,92 +218,100 @@ const TestScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.main}>
-        <FlatList
-          ref={flatlistRef}
-          // onContentSizeChange={() =>
-          //   flatlistRef.current.scrollToEnd({animated: true})
-          // }
-          data={state}
-          keyExtractor={item => item.id}
-          scrollEnabled={isActiveScrool}
-          style={{flex: 1}}
-          ListHeaderComponent={
-            <View style={styles.listHeaderStyle}>
-              <Text style={styles.headerTitle}>Psychosociale Anamnese</Text>
-              <Text style={styles.headerSubTitle}>
-                Kies de alleen de vragen die volgens jouw belangrijk zijn.
-              </Text>
-            </View>
-          }
-          renderItem={({item, index}) => {
-            if (!(index % 2)) {
-              return (
-                <MessageQuestion
-                  key={item.id}
-                  text={item.message}
-                  selected={item.selected}
-                  setQuestionPosition={setQuestionPosition}
-                />
-              );
-            } else {
-              return (
-                <MessageAnswer
-                  key={item.id}
-                  text={item.message}
-                  isLoading={isLoading}
-                  newAnswerMessage={newAnswerMessage}
-                />
-              );
+      <BackgroundImage
+        source={require('../../../../assets/backgrounds/Psychosocial-BG.jpg')}
+        borderBottomRadius={17}>
+        <View style={styles.main}>
+          <FlatList
+            ref={flatlistRef}
+            // onContentSizeChange={() =>
+            //   flatlistRef.current.scrollToEnd({animated: true})
+            // }
+            data={state}
+            keyExtractor={item => item.id}
+            scrollEnabled={isActiveScrool}
+            style={{flex: 1}}
+            ListHeaderComponent={
+              <View style={styles.listHeaderStyle}>
+                <Text style={styles.headerTitle}>Psychosociale Anamnese</Text>
+                <Text style={styles.headerSubTitle}>
+                  Kies de alleen de vragen die volgens jouw belangrijk zijn.
+                </Text>
+              </View>
             }
-          }}
-          ListFooterComponent={
-            <Animated.View style={[styles.boxContainer, animateQuestionsBlock]}>
-              {fakeQuestions.map((el, index) => (
-                <QuestionBox
-                  key={el.id}
-                  questionsArray={state}
-                  id={el.id}
-                  selected={el.selected}
-                  question={el.message}
-                  addQuestion={addQuestion}
-                  setMeasure={setMeasure}
+            renderItem={({item, index}) => {
+              if (!(index % 2)) {
+                return (
+                  <MessageQuestion
+                    key={item.id}
+                    text={item.message}
+                    selected={item.selected}
+                    setQuestionPosition={setQuestionPosition}
+                  />
+                );
+              } else {
+                return (
+                  <MessageAnswer
+                    key={item.id}
+                    text={item.message}
+                    isLoading={isLoading}
+                    newAnswerMessage={newAnswerMessage}
+                  />
+                );
+              }
+            }}
+            ListFooterComponent={
+              <Animated.View
+                style={[styles.boxContainer, animateQuestionsBlock]}>
+                {fakeQuestions.map((el, index) => (
+                  <QuestionBox
+                    key={el.id}
+                    questionsArray={state}
+                    id={el.id}
+                    selected={el.selected}
+                    question={el.message}
+                    addQuestion={addQuestion}
+                    setMeasure={setMeasure}
+                  />
+                ))}
+              </Animated.View>
+            }
+          />
+          {userChoises?.selected && measure?.top && (
+            <Animated.View style={[{position: 'absolute'}, animateStyle]}>
+              <View style={[styles.selectQuestion]}>
+                <Text style={styles.textQuestion}>{userChoises.message}</Text>
+                <QuestionAngle
+                  style={{position: 'absolute', bottom: -11, right: -6}}
+                  width={20}
+                  height={20}
                 />
-              ))}
+              </View>
             </Animated.View>
-          }
-        />
-        {userChoises?.selected && measure?.top && (
-          <Animated.View style={[{position: 'absolute'}, animateStyle]}>
-            <View style={[styles.selectQuestion]}>
-              <Text style={styles.textQuestion}>{userChoises.message}</Text>
-              <View style={styles.rightArrow} />
-              <View style={styles.rightArrowOverlap} />
-            </View>
-          </Animated.View>
-        )}
-      </View>
-      <Button title="Back" onPress={() => navigation.goBack()} />
+          )}
+        </View>
+      </BackgroundImage>
+      <GameTabBar />
     </View>
   );
 };
 
-export default TestScreen;
+export default PsychoSocScreen;
 
 const {height} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ffe6e6',
     flex: 1,
   },
   main: {
-    backgroundColor: '#635f5f',
-    flex: 0.9,
+    // backgroundColor: '#635f5f',
+    flex: 1,
     // paddingHorizontal: 45,
-    borderBottomLeftRadius: 35,
-    borderBottomRightRadius: 35,
+    // borderBottomLeftRadius: 35,
+    // borderBottomRightRadius: 35,
   },
+  mainContent: {},
   boxContainer: {
     marginTop: 30,
     marginHorizontal: 45,
@@ -349,22 +360,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#ffffff',
   },
-  // rightArrow: {
-  //   position: 'absolute',
-  //   backgroundColor: '#0078fe',
-  //   width: 10,
-  //   height: 30,
-  //   bottom: -20,
-  //   right: 0,
-  // },
-  //
-  // rightArrowOverlap: {
-  //   position: 'absolute',
-  //   backgroundColor: '#635f5f',
-  //   width: 10,
-  //   height: 25,
-  //   bottom: -25,
-  //   borderTopRightRadius: 50,
-  //   right: 0,
-  // },
 });

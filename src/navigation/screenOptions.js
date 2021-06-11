@@ -1,6 +1,8 @@
 import {
+  HeaderStyleInterpolators,
   StackCardInterpolationProps,
   TransitionPresets,
+  TransitionSpecs,
 } from '@react-navigation/stack';
 import {Animated} from 'react-native';
 
@@ -36,6 +38,24 @@ export const opacityOptions = {
     },
   }),
 };
+
+export const anotherOpacity = () => ({
+  // useNativeDriver: true,
+  gestureEnabled: false,
+  transitionSpec: {
+    open: {animation: 'timing', config: {duration: 300}},
+    close: {animation: 'timing', config: {duration: 300}},
+  },
+  cardStyleInterpolator: ({current: {progress}}) => {
+    return {
+      cardStyle: {
+        opacity: progress,
+      },
+    };
+  },
+  headerShown: false,
+  header: null,
+});
 
 export const SlideFromTop = (props: StackCardInterpolationProps) => {
   const progress = Animated.add(
@@ -111,4 +131,27 @@ export const forSlide = ({current, next, inverted, layouts: {screen}}) => {
       ],
     },
   };
+};
+
+export const horizontalSlide = {
+  gestureDirection: 'horizontal',
+  transitionSpec: {
+    open: {animation: 'timing', config: {duration: 300}},
+    close: {animation: 'timing', config: {duration: 300}},
+  },
+  headerStyleInterpolator: HeaderStyleInterpolators.forFade,
+  cardStyleInterpolator: ({current, next, layouts}) => {
+    return {
+      cardStyle: {
+        transform: [
+          {
+            translateX: current.progress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [layouts.screen.width, 0],
+            }),
+          },
+        ],
+      },
+    };
+  },
 };

@@ -22,7 +22,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 62,
-    marginBottom: 44,
+    // marginBottom: 44, // !!!!!!!!!!!!!!
   },
   leftBall: {
     height: 125,
@@ -42,6 +42,7 @@ export const styles = StyleSheet.create({
   levelTextRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
   actualLvl: {
     fontFamily: 'Ubuntu-Bold',
@@ -52,6 +53,14 @@ export const styles = StyleSheet.create({
     fontFamily: 'Ubuntu-Bold',
     fontSize: 16,
     color: '#00084b',
+  },
+  animProgressUser: {
+    position: 'absolute',
+    top: 50,
+    backgroundColor: '#5466fc',
+    height: 18,
+    borderRadius: 4,
+    zIndex: 1,
   },
   userProgress: {
     marginVertical: 5,
@@ -103,5 +112,15 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     color: '#00084b',
     marginBottom: 8,
+  },
+  pointsText: {
+    // top: 20,
+    zIndex: 2, // zIndex: 1 have user ProgressBar
+    alignSelf: 'center',
+    textAlign: 'center',
+    fontFamily: 'Roboto-Bold',
+    fontSize: 26,
+    color: '#00084b',
+    lineHeight: 26,
   },
 });

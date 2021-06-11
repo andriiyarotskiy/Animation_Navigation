@@ -8,6 +8,8 @@ import UserCard from './UserCard';
 import BackgroundImage from './BackgroundImage';
 import ProgressBar from './ProgressBar';
 import AnimatedBottomSheet from './AnimatedBottomSheet';
+import ArrowNext from './ArrowNext';
+import CircleScoreBoard from './CircleScoreBoard';
 
 export {
   ProgressBar,
@@ -20,4 +22,6 @@ export {
   QuestionBox,
   MessageQuestion,
   MessageAnswer,
+  ArrowNext,
+  CircleScoreBoard,
 };

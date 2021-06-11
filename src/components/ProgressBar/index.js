@@ -2,7 +2,15 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Animated, View, StyleSheet} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-const ProgressBar = ({steps, height, step, backgroundColor, borderColor}) => {
+const ProgressBar = ({
+  steps,
+  height,
+  step,
+  userLvl,
+  setProgressBarWidth,
+  backgroundColor,
+  borderColor,
+}) => {
   const [width, setWidth] = useState(0);
   const animatedValue = useRef(new Animated.Value(-1000)).current;
   const reactive = useRef(new Animated.Value(-1000)).current;
@@ -18,6 +26,13 @@ const ProgressBar = ({steps, height, step, backgroundColor, borderColor}) => {
   useEffect(() => {
     reactive.setValue(-width + (width * step) / steps);
   }, [step, width]);
+
+  useEffect(() => {
+    if (userLvl) {
+      // get filled width
+      setProgressBarWidth(width + (-width + (width * step) / steps));
+    }
+  }, [userLvl, width, step]);
 
   return (
     <View

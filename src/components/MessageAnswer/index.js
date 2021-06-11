@@ -8,6 +8,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import AnswerAngle from './icon/answerAngle.svg';
 
 const MessageAnswer = ({text, isLoading, newAnswerMessage}) => {
   const {width, height} = useWindowDimensions();
@@ -69,8 +70,11 @@ const MessageAnswer = ({text, isLoading, newAnswerMessage}) => {
               }}>
               {text}
             </Text>
-            <View style={styles.leftArrow} />
-            <View style={styles.leftArrowOverlap} />
+            <AnswerAngle
+              style={{position: 'absolute', top: -12, left: -2}}
+              width={20}
+              height={20}
+            />
           </View>
         </Animated.View>
       )}
@@ -113,21 +117,4 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#5466fc',
   },
-  // leftArrow: {
-  //   position: 'absolute',
-  //   backgroundColor: '#dedede',
-  //   width: 10,
-  //   height: 30,
-  //   top: -20,
-  // },
-  //
-  // leftArrowOverlap: {
-  //   position: 'absolute',
-  //   backgroundColor: '#635f5f', // Rounding
-  //   width: 10,
-  //   height: 25,
-  //   borderBottomLeftRadius: 50,
-  //   top: -25,
-  //   left: 0,
-  // },
 });

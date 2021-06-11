@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
+import CircleScoreBoard from '../CircleScoreBoard';
 
 const PacientHeaderCard = ({photo, name, subTitle, ...props}) => {
   return (
@@ -23,8 +24,8 @@ const PacientHeaderCard = ({photo, name, subTitle, ...props}) => {
         <Text style={styles.nameStyle}>{name}</Text>
         <Text style={styles.subTitle}>{subTitle}</Text>
       </View>
-      <View style={styles.timerStyle}>
-        <Text style={styles.countText}>15</Text>
+      <View style={styles.scoreBoard}>
+        <CircleScoreBoard progress={props?.score || 15} />
       </View>
     </View>
   );
@@ -35,6 +36,7 @@ export default PacientHeaderCard;
 const styles = StyleSheet.create({
   // PACIENT CARD
   pacientCard: {
+    // backgroundColor: 'grey',
     zIndex: 1,
     top: 0,
     width: '90%',
@@ -63,22 +65,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000a42',
   },
-  timerStyle: {
+  scoreBoard: {
     position: 'absolute',
     right: 0,
-    width: 73,
-    height: 73,
-    borderWidth: 1,
-    borderColor: '#000a42',
-    borderRadius: 75,
-    backgroundColor: '#ffffff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  countText: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 20,
-    color: '#000a42',
   },
   // PACIENT CARD
 });

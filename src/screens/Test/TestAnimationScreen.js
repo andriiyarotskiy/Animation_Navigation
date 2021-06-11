@@ -54,7 +54,7 @@ const TestAnimationScreen = ({navigation, route}) => {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: 'pink',
+        // backgroundColor: 'pink',
         // justifyContent: 'center',
         marginHorizontal: 15,
       }}>

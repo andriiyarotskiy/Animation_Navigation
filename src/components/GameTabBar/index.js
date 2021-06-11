@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import FolderIcon from './icons/computer-folder-open.svg';
-import MenuIcon from './icons/hamburger-menu.svg';
+import FolderIcon from './icons/dossier.svg';
 import StepIndicator from 'react-native-step-indicator';
 import AnimatedBottomSheet from '../AnimatedBottomSheet';
+import GameMenuIcon from './icons/menuIcon.svg';
 
 const labels = ['One', 'Two', 'Three', 'Four', 'Five'];
 const customStyles = {
@@ -45,12 +45,12 @@ const GameTabBar = () => {
       <View style={styles.container}>
         <View style={styles.menuSection}>
           <View style={styles.iconContainer}>
-            <MenuIcon width={40} height={40} fill={'#000'} />
+            <GameMenuIcon width={25} height={25} />
             <Text style={styles.routeName}>Menu</Text>
           </View>
           <TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
             <View style={styles.iconContainer}>
-              <FolderIcon width={40} height={40} fill={'#000'} />
+              <FolderIcon width={27} height={21} />
               <Text style={styles.routeName}>Dossier</Text>
             </View>
           </TouchableOpacity>
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   },
   // Left Arrow
   leftArrowContainer: {
-    width: width * 0.2,
+    width: width * 0.2 + 10,
     height: 2,
     backgroundColor: '#5466fc',
     position: 'absolute',

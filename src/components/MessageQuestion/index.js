@@ -6,6 +6,7 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
+import QuestionAngle from './icon/questionAngle.svg';
 
 const MessageQuestion = ({text, selected, setQuestionPosition}) => {
   const questionInBoxRef = useRef(null);
@@ -34,10 +35,15 @@ const MessageQuestion = ({text, selected, setQuestionPosition}) => {
         ref={questionInBoxRef}
         style={[{...styles.container}, styleAnimation]}>
         <Text style={styles.textQuestion}>{text}</Text>
+        <QuestionAngle
+          style={{position: 'absolute', bottom: -11, right: -6}}
+          width={20}
+          height={20}
+        />
 
-        <View style={styles.rightArrow} />
+        {/*<View style={styles.rightArrow} />*/}
 
-        <View style={styles.rightArrowOverlap} />
+        {/*<View style={styles.rightArrowOverlap} />*/}
       </Animated.View>
     </>
   );

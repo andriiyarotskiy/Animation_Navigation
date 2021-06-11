@@ -1,43 +1,82 @@
 import React from 'react';
 import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
-import {
-  CardStyleInterpolators,
-  createStackNavigator,
-} from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import DashboardScreen from '../screens/Dashboard';
 import WaitRoomScreen from '../screens/WaitRoom';
-import TestScreen from '../screens/TestScreen';
 import LoadingScreen from '../screens/Loading/Loading';
-import TestAnimationScreen from '../screens/Test/TestAnimationScreen';
-import LeftScreen from '../screens/Test/LeftScreen';
 import {createSharedElementStackNavigator} from 'react-navigation-shared-element';
-import RightScreen from '../screens/Test/RightScreen';
 import GameMenuScreen from '../screens/GameMenu';
-import PsychoSocScreen from '../screens/GameMenu/PsychoSoc';
 import MedicalFirstScreen from '../screens/GameMenu/Medical/MedicalFirst';
 import MedicalSecondScreen from '../screens/GameMenu/Medical/MedicalSecond';
 import {PacientHeaderCard} from '../components';
-import {opacityOptions, SlideFromTop} from './screenOptions';
+import {anotherOpacity, SlideFromTop} from './screenOptions';
+import PsychoSocScreen from '../screens/GameMenu/PsychoSoc';
+import DifDiagnoseFirstScreen from '../screens/GameMenu/DifferentialDiagnose/DifDiagnoseFirst';
+import DifDiagnoseSecondScreen from '../screens/GameMenu/DifferentialDiagnose/DifDiagnoseSecond';
+import TestScreen from '../screens/TestScreen';
 
-const TestSharedStack = createSharedElementStackNavigator();
+// const TestSharedStack = createSharedElementStackNavigator();
 
-const MedicalStack = createStackNavigator();
+const MedicalStack = createSharedElementStackNavigator();
+const DifDiagnoseStack = createSharedElementStackNavigator();
 const GameMenuStack = createSharedElementStackNavigator();
-const DashBoardStack = createSharedElementStackNavigator();
-const MainStack = createStackNavigator();
+const MainStack = createSharedElementStackNavigator();
 const RootStack = createStackNavigator();
 
-const MedicalScreensStack = () => {
+const DifDiagnoseScreensStack = () => {
   return (
-    <MedicalStack.Navigator
-      headerMode="none"
-      screenOptions={{
-        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-      }}>
-      <MedicalStack.Screen name="MedicalFirst" component={MedicalFirstScreen} />
+    <DifDiagnoseStack.Navigator
+      headerMode="screen"
+      screenOptions={anotherOpacity}>
+      <DifDiagnoseStack.Screen
+        options={{headerShown: false}}
+        name="DifDiagnoseFirst"
+        component={DifDiagnoseFirstScreen}
+      />
+      {/*<DifDiagnoseStack.Screen*/}
+      {/*  options={{headerShown: false}}*/}
+      {/*  name="DifDiagnoseSecond"*/}
+      {/*  sharedElements={route => {*/}
+      {/*    const {answers} = route.params;*/}
+      {/*    return [{id: 'answers'}];*/}
+      {/*  }}*/}
+      {/*  component={DifDiagnoseSecondScreen}*/}
+      {/*/>*/}
+    </DifDiagnoseStack.Navigator>
+  );
+};
+
+const MedicalScreensStack = () => {
+  const pacientAva = 'https://reactnative.dev/img/tiny_logo.png';
+
+  return (
+    <MedicalStack.Navigator headerMode="screen">
       <MedicalStack.Screen
+        options={{
+          header: props => (
+            <PacientHeaderCard
+              {...props}
+              name="Jeroen Boeve"
+              photo={pacientAva}
+              subTitle="Casus patient"
+            />
+          ),
+        }}
+        name="MedicalFirst"
+        component={MedicalFirstScreen}
+      />
+      <MedicalStack.Screen
+        options={anotherOpacity}
         name="MedicalSecond"
         component={MedicalSecondScreen}
+        sharedElements={(route, otherRoute, showing) => {
+          const {answer} = route.params;
+          if (showing) {
+            return [
+              {id: `answer.${answer.id}`, animation: 'fade', resize: 'clip'},
+            ];
+          }
+        }}
       />
     </MedicalStack.Navigator>
   );
@@ -46,79 +85,94 @@ const MedicalScreensStack = () => {
 const GameStack = () => {
   const pacientAva = 'https://reactnative.dev/img/tiny_logo.png';
   return (
-    <GameMenuStack.Navigator
-      headerMode="screen"
-      screenOptions={{
-        header: props => (
-          <PacientHeaderCard
-            {...props}
-            name="Jeroen Boeve"
-            photo={pacientAva}
-            subTitle="Casus patient"
-          />
-        ),
-      }}>
-      <GameMenuStack.Screen name="PsychoSoc" component={PsychoSocScreen} />
-      <GameMenuStack.Screen name="Medical" component={MedicalScreensStack} />
-    </GameMenuStack.Navigator>
-  );
-};
-
-const DashBoard = () => {
-  return (
-    <DashBoardStack.Navigator
-      mode="modal"
-      screenOptions={opacityOptions}
-      headerMode="none">
-      <DashBoardStack.Screen name="Dashboard" component={DashboardScreen} />
-      <DashBoardStack.Screen
-        name="WaitRoom"
-        component={WaitRoomScreen}
-        sharedElements={(route, otherRoute, showing) => {
-          const {item} = route.params;
-          return [{id: 'leftMenuImage'}];
-        }}
-      />
-      <DashBoardStack.Screen
-        name="GameMenu"
-        component={GameMenuScreen}
-        sharedElements={(route, otherRoute, showing) => {
-          const {item} = route.params;
-          if (showing) {
-            return [
-              {id: `item.${item.id}.photo`, resize: 'auto'},
-              {id: `item.${item.id}.name`},
-              {id: `item.${item.id}.subTitle`},
-            ];
-          }
-        }}
-      />
-      <DashBoardStack.Screen
-        name="GameStack"
-        component={GameStack}
+    <GameMenuStack.Navigator headerMode="screen">
+      <GameMenuStack.Screen
         options={{
-          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          header: props => (
+            <PacientHeaderCard
+              {...props}
+              name="Jeroen Boeve"
+              photo={pacientAva}
+              subTitle="Casus patient"
+            />
+          ),
         }}
-        // options={{cardStyleInterpolator: forSlide}}
+        name="PsychoSoc"
+        component={PsychoSocScreen}
       />
-      {/*<DashBoardStack.Screen*/}
-      {/*  name="FreePlay"*/}
-      {/*  component={FreePlayScreen}*/}
-      {/*  sharedElements={(route, otherRoute, showing) => {*/}
-      {/*    const {item} = route.params;*/}
-      {/*    return [{id: 'rightMenuImage'}];*/}
-      {/*  }}*/}
-      {/*/>*/}
-    </DashBoardStack.Navigator>
+      <GameMenuStack.Screen
+        options={anotherOpacity}
+        name="Medical"
+        component={MedicalScreensStack}
+      />
+      <GameMenuStack.Screen
+        name="DifDiagnose"
+        options={{
+          header: props => (
+            <PacientHeaderCard
+              {...props}
+              name="Jeroen Boeve"
+              photo={pacientAva}
+              subTitle="Casus patient"
+            />
+          ),
+        }}
+        component={DifDiagnoseScreensStack}
+      />
+    </GameMenuStack.Navigator>
   );
 };
 
 const Main = () => {
   return (
-    <MainStack.Navigator headerMode="none">
-      <MainStack.Screen name="DashBoard" component={DashBoard} />
-      <MainStack.Screen name="TestScreen" component={TestScreen} />
-      <MainStack.Screen name="TestShared" component={TestShared} />
+    <MainStack.Navigator
+      mode="screen"
+      initialRouteName="Dashboard"
+      screenOptions={anotherOpacity}
+      headerMode="none">
+      <MainStack.Screen
+        // options={opacityOptions}
+        name="Test"
+        component={TestScreen}
+      />
+      <MainStack.Screen
+        // options={opacityOptions}
+        name="Dashboard"
+        component={DashboardScreen}
+      />
+      <MainStack.Screen
+        name="WaitRoom"
+        // options={opacityOptions}
+        component={WaitRoomScreen}
+        sharedElements={(route, otherRoute, showing) => {
+          const {item} = route.params;
+          return [{id: 'leftMenuImage', animation: 'fade', resize: 'clip'}];
+        }}
+      />
+      <MainStack.Screen
+        name="GameStack"
+        component={GameStack}
+        // options={opacityOptions}
+      />
+      <MainStack.Screen
+        name="GameMenu"
+        component={GameMenuScreen}
+        // options={opacityOptions}
+        sharedElements={(route, otherRoute, showing) => {
+          const {item} = route.params;
+          if (showing) {
+            return [
+              {id: `item.${item.id}.photo`, animation: 'fade', resize: 'clip'},
+              {id: `item.${item.id}.name`, animation: 'fade', resize: 'clip'},
+              {
+                id: `item.${item.id}.subTitle`,
+                animation: 'fade',
+                resize: 'clip',
+              },
+            ];
+          }
+        }}
+      />
     </MainStack.Navigator>
   );
 };
@@ -154,36 +208,36 @@ const Navigator = () => {
 export default Navigator;
 
 /** This is a test stack **/
-const TestShared = () => {
-  return (
-    <TestSharedStack.Navigator
-      mode="modal"
-      screenOptions={opacityOptions}
-      headerMode="none">
-      <TestSharedStack.Screen
-        name="TestAnimation"
-        component={TestAnimationScreen}
-      />
-      <TestSharedStack.Screen
-        name="Left"
-        component={LeftScreen}
-        sharedElements={(route, otherRoute, showing) => {
-          const {sharedItem} = route.params;
-          return [
-            {id: 'leftMenuImage'},
-            {animation: 'fade', resize: 'clip', align: 'left-top'},
-          ];
-        }}
-      />
-      <TestSharedStack.Screen
-        name="Right"
-        component={RightScreen}
-        sharedElements={(route, otherRoute, showing) => {
-          const {sharedItem} = route.params;
-          return [{id: 'rightMenuImage'}];
-        }}
-      />
-    </TestSharedStack.Navigator>
-  );
-};
+// const TestShared = () => {
+//   return (
+//     <TestSharedStack.Navigator
+//       mode="modal"
+//       screenOptions={opacityOptions}
+//       headerMode="none">
+//       <TestSharedStack.Screen
+//         name="TestAnimation"
+//         component={TestAnimationScreen}
+//       />
+//       <TestSharedStack.Screen
+//         name="Left"
+//         component={LeftScreen}
+//         sharedElements={(route, otherRoute, showing) => {
+//           const {sharedItem} = route.params;
+//           return [
+//             {id: 'leftMenuImage'},
+//             {animation: 'fade', resize: 'clip', align: 'left-top'},
+//           ];
+//         }}
+//       />
+//       <TestSharedStack.Screen
+//         name="Right"
+//         component={RightScreen}
+//         sharedElements={(route, otherRoute, showing) => {
+//           const {sharedItem} = route.params;
+//           return [{id: 'rightMenuImage'}];
+//         }}
+//       />
+//     </TestSharedStack.Navigator>
+//   );
+// };
 /** This is a test stack **/
