@@ -80,10 +80,15 @@ const WaitRoomScreen = ({route, navigation}) => {
           <View style={styles.leftBall}>
             <TouchableOpacity
               activeOpacity={0.9}
-              onPress={() => navigation.goBack()}>
+              onPress={() => navigation.navigate('Dashboard')}>
               <SharedElement id={'leftMenuImage'}>
                 <Image
-                  style={styles.menuImage}
+                  style={{
+                    width: 100,
+                    height: 100,
+                    resizeMode: 'cover',
+                    borderRadius: 125,
+                  }}
                   source={{uri: sharedItem.image}}
                 />
               </SharedElement>

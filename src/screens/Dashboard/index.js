@@ -218,7 +218,7 @@ const DashboardScreen = ({route, navigation}) => {
                     width: 125,
                     height: 125,
                     resizeMode: 'cover',
-                    borderRadius: 150,
+                    borderRadius: 125,
                   }}
                   source={{uri: data[0].image}}
                 />
@@ -236,7 +236,7 @@ const DashboardScreen = ({route, navigation}) => {
                       width: 125,
                       height: 125,
                       resizeMode: 'cover',
-                      borderRadius: 100,
+                      borderRadius: 125,
                     }}
                     source={{uri: data[1].image}}
                   />
