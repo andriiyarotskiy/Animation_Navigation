@@ -19,6 +19,8 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import axios from 'axios';
+import CookieManager from '@react-native-cookies/cookies';
 
 const image = 'https://reactnative.dev/img/tiny_logo.png';
 const data = [{image: image}, {image: image}];
@@ -180,6 +182,27 @@ const DashboardScreen = ({route, navigation}) => {
   });
   /** Animations **/
 
+  /** Checkk login **/
+  const checkIsLoggedIn = () => {
+    CookieManager.clearAll().then(succcess => {
+      console.log('CookieManager.clearAll from webkit-view =>', succcess);
+    });
+
+    // axios
+    //   .post('https://hemd.hudatascience.nl/mypractice/api/v1/check_login', {
+    //     app: 'inpraktijk_game',
+    //   })
+    //   .then(loggedIn =>
+    //     console.log(
+    //       'loggedIn',
+    //       loggedIn.data,
+    //       'is_logged_in',
+    //       loggedIn.data.is_logged_in,
+    //     ),
+    //   );
+  };
+  /** Checkk login **/
+
   return (
     <BackgroundImage>
       <ScrollView>
@@ -226,7 +249,7 @@ const DashboardScreen = ({route, navigation}) => {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={
-                () => setUserPoints(430)
+                checkIsLoggedIn
                 // navigation.push('FreePlay', {sharedItem: data[1]})
               }>
               <View style={styles.item}>
