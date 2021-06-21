@@ -61,7 +61,7 @@ export default ProgressBar;
 const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
-    backgroundColor: 'rgba(0,0,0,0.1)',
+    backgroundColor: '#ffffff',
     borderRadius: 4,
     overflow: 'hidden',
   },

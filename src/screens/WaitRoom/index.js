@@ -12,39 +12,28 @@ import {styles} from './style';
 import {SharedElement} from 'react-navigation-shared-element';
 import FastImage from 'react-native-fast-image';
 import {BackgroundImage, TabBar, UserCard} from '../../components';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {useDispatch, useSelector} from 'react-redux';
+import {getSectionsTC} from '../../redux/reducers/section-reducer';
 
 const pacientAva = 'https://reactnative.dev/img/tiny_logo.png';
-const pacientList = [
-  {
-    photo: pacientAva,
-    name: 'Maria Du Soleil',
-    subTitle: 'Casus patient',
-    id: Math.random().toString(),
-  },
-  {
-    photo: 'https://unsplash.it/75/75?image=1',
-    name: 'Jeroen Boeve',
-    subTitle: 'Casus patient',
-    id: Math.random().toString(),
-  },
-  {
-    photo: pacientAva,
-    name: 'Maria Du Soleil',
-    subTitle: 'Casus patient',
-    id: Math.random().toString(),
-  },
-];
 
 const WaitRoomScreen = ({route, navigation}) => {
+  const {cases} = useSelector(state => state.case);
+  const dispatch = useDispatch();
+
   const {height, width} = useWindowDimensions();
 
   const {sharedItem} = route.params;
 
   const renderItem = ({item}) => (
     <TouchableWithoutFeedback
-      onPress={() => navigation.navigate('GameMenu', {item})}>
+      onPress={() => {
+        dispatch(getSectionsTC(item.uid));
+        navigation.navigate('GameMenu', {item});
+      }}>
       <View style={styles.pacientCard}>
-        <SharedElement id={`item.${item.id}.photo`}>
+        <SharedElement id={`item.${item.uid}.photo`}>
           <View style={styles.pacientAva}>
             <FastImage
               style={{
@@ -53,7 +42,7 @@ const WaitRoomScreen = ({route, navigation}) => {
               }}
               resizeMode={FastImage.resizeMode.cover}
               source={{
-                uri: item.photo,
+                uri: item.patient.profile_image_url,
                 priority: FastImage.priority.high,
                 cache: FastImage.cacheControl.immutable,
               }}
@@ -62,11 +51,11 @@ const WaitRoomScreen = ({route, navigation}) => {
         </SharedElement>
 
         <View style={styles.pacientTextInfo}>
-          <SharedElement id={`item.${item.id}.name`}>
-            <Text style={styles.nameStyle}>{item.name}</Text>
+          <SharedElement id={`item.${item.uid}.name`}>
+            <Text style={styles.nameStyle}>{item.patient.display_name}</Text>
           </SharedElement>
-          <SharedElement id={`item.${item.id}.subTitle`}>
-            <Text style={styles.subTitle}>{item.subTitle}</Text>
+          <SharedElement id={`item.${item.uid}.subTitle`}>
+            <Text style={styles.subTitle}>{item.patient.display_surname}</Text>
           </SharedElement>
         </View>
       </View>
@@ -74,35 +63,46 @@ const WaitRoomScreen = ({route, navigation}) => {
   );
 
   return (
-    <BackgroundImage>
+    <BackgroundImage
+      source={require('../../../assets/backgrounds/Home-BG.jpg')}>
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={styles.leftBall}>
-            <TouchableOpacity
+            <TouchableWithoutFeedback
               activeOpacity={0.9}
-              onPress={() => navigation.navigate('Dashboard')}>
-              <SharedElement id={'leftMenuImage'}>
-                <Image
+              onPress={() => navigation.goBack()}>
+              <SharedElement id={`item.${sharedItem.id}.icon`}>
+                <View
                   style={{
+                    borderRadius: 100,
+                    backgroundColor: '#5466fc',
                     width: 100,
                     height: 100,
-                    resizeMode: 'cover',
-                    borderRadius: 125,
-                  }}
-                  source={{uri: sharedItem.image}}
-                />
+                    overflow: 'hidden',
+                  }}>
+                  <FontAwesomeIcon
+                    icon={sharedItem.icon}
+                    style={{
+                      position: 'absolute',
+                      bottom: -5,
+                      alignSelf: 'center',
+                    }}
+                    size={70}
+                    color="#ffffff"
+                  />
+                </View>
               </SharedElement>
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
           </View>
           <View style={styles.userBlock}>
-            <UserCard name="Andreas" userAva={pacientList[0].photo} />
+            <UserCard name="Andreas" userAva={pacientAva} />
           </View>
         </View>
       </View>
       <View style={styles.pacientList}>
         <FlatList
-          data={pacientList}
-          keyExtractor={item => item.id}
+          data={cases}
+          keyExtractor={item => item.patient_uid}
           ListHeaderComponentStyle={styles.listHeader}
           ListHeaderComponent={
             <View>

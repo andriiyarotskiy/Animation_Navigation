@@ -145,8 +145,14 @@ const Main = () => {
         // options={opacityOptions}
         component={WaitRoomScreen}
         sharedElements={(route, otherRoute, showing) => {
-          const {item} = route.params;
-          return [{id: 'leftMenuImage', animation: 'fade', resize: 'clip'}];
+          const {sharedItem} = route.params;
+          return [
+            {
+              id: `item.${sharedItem.id}.icon`,
+              animation: 'fade',
+              resize: 'stretch',
+            },
+          ];
         }}
       />
       <MainStack.Screen
@@ -162,10 +168,10 @@ const Main = () => {
           const {item} = route.params;
           if (showing) {
             return [
-              {id: `item.${item.id}.photo`, animation: 'fade', resize: 'clip'},
-              {id: `item.${item.id}.name`, animation: 'fade', resize: 'clip'},
+              {id: `item.${item.uid}.photo`, animation: 'fade', resize: 'clip'},
+              {id: `item.${item.uid}.name`, animation: 'fade', resize: 'clip'},
               {
-                id: `item.${item.id}.subTitle`,
+                id: `item.${item.uid}.subTitle`,
                 animation: 'fade',
                 resize: 'clip',
               },

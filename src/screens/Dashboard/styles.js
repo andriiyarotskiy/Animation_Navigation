@@ -24,13 +24,13 @@ export const styles = StyleSheet.create({
     marginTop: 62,
     // marginBottom: 44, // !!!!!!!!!!!!!!
   },
-  // leftBall: {
-  //   height: 125,
-  //   width: 125,
-  //   borderRadius: 100,
-  //   justifyContent: 'center',
-  //   backgroundColor: '#4649ad',
-  // },
+  leftBall: {
+    height: 125,
+    width: 125,
+    borderRadius: 100,
+    justifyContent: 'center',
+    backgroundColor: '#4649ad',
+  },
   rightBall: {
     height: 125,
     width: 125,

@@ -20,7 +20,7 @@ import Animated, {
   interpolateColor,
 } from 'react-native-reanimated';
 import DraggableFlatList from 'react-native-draggable-flatlist';
-import {ArrowNext, GameTabBar} from '../../../../components';
+import {ArrowNext, BackgroundImage, GameTabBar} from '../../../../components';
 
 LogBox.ignoreAllLogs(true);
 
@@ -138,6 +138,9 @@ const DifDiagnoseFirstScreen = ({navigation}) => {
 
     if (isNext) {
       setCheckAnswer(true);
+      // setTimeout(() => {
+      //   navigation.navigate('GameMenu');
+      // }, 3000);
     }
     LayoutAnimation.configureNext(CustomAnimation);
   };
@@ -204,27 +207,30 @@ const DifDiagnoseFirstScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Animated.View style={[styles.nextBtn, styleArrowAnim]}>
-        <ArrowNext onPress={nextStepHandler} />
-      </Animated.View>
-      <DraggableFlatList
-        data={data}
-        keyExtractor={item => item.id}
-        ListHeaderComponent={
-          <View style={{height: 175}}>
-            <Animated.View
-              style={[styles.listHeaderStyle, styleHeaderAnimation]}>
-              <Text style={styles.headerTitle}>{header.title}</Text>
-              <Text style={styles.headerSubTitle}>{header.subTitle}</Text>
-            </Animated.View>
-          </View>
-        }
-        renderItem={renderItem}
-        onDragEnd={({data}) => {
-          setData(data);
-        }}
-        ListFooterComponent={<View style={{height: 25}} />}
-      />
+      <BackgroundImage
+        source={require('../../../../../assets/backgrounds/Basic-BG.jpg')}>
+        <Animated.View style={[styles.nextBtn, styleArrowAnim]}>
+          <ArrowNext onPress={nextStepHandler} />
+        </Animated.View>
+        <DraggableFlatList
+          data={data}
+          keyExtractor={item => item.id}
+          ListHeaderComponent={
+            <View style={{height: 175}}>
+              <Animated.View
+                style={[styles.listHeaderStyle, styleHeaderAnimation]}>
+                <Text style={styles.headerTitle}>{header.title}</Text>
+                <Text style={styles.headerSubTitle}>{header.subTitle}</Text>
+              </Animated.View>
+            </View>
+          }
+          renderItem={renderItem}
+          onDragEnd={({data}) => {
+            setData(data);
+          }}
+          ListFooterComponent={<View style={{height: 25}} />}
+        />
+      </BackgroundImage>
       <View>
         <GameTabBar />
       </View>

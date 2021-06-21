@@ -16,6 +16,8 @@ target 'testAnimation' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
+  pod 'react-native-cookies', :path => '../node_modules/@react-native-cookies/cookies'
+
   target 'testAnimationTests' do
     inherit! :complete
     # Pods for testing

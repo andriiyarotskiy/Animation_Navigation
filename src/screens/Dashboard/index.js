@@ -1,15 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import {
-  Image,
   ScrollView,
   Text,
-  TouchableOpacity,
+  TouchableWithoutFeedback,
   useWindowDimensions,
   View,
 } from 'react-native';
 import {styles} from './styles';
 import {SharedElement} from 'react-navigation-shared-element';
-import {numberWithDot, usePrevious} from '../../helpers/helpersFunctions';
+import {
+  getFromAsyncStorage,
+  numberWithDot,
+  usePrevious,
+} from '../../helpers/helpersFunctions';
 import {BackgroundImage, ProgressBar, TabBar, UserCard} from '../../components';
 import Animated, {
   useAnimatedStyle,
@@ -19,16 +22,31 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import axios from 'axios';
-import CookieManager from '@react-native-cookies/cookies';
+import {faClinicMedical, faMedal} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {useDispatch, useSelector} from 'react-redux';
+import {getAssignedCasesTC} from '../../redux/reducers/case-reducer';
 
 const image = 'https://reactnative.dev/img/tiny_logo.png';
-const data = [{image: image}, {image: image}];
+const data = [
+  {icon: faClinicMedical, id: '1'},
+  {icon: faMedal, id: '2'},
+];
 
 const DashboardScreen = ({route, navigation}) => {
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+  // const {xp_earned} = useSelector(state => state.player);
+  const {cases} = useSelector(state => state.case);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      dispatch(getAssignedCasesTC());
+    }
+  }, [isLoggedIn, dispatch]);
+
   const {width, height} = useWindowDimensions();
 
-  const [userPoints, setUserPoints] = useState(250);
   const [progressBarWidth, setProgressBarWidth] = useState(0);
 
   const isGameOver = route.params?.gameOver;
@@ -164,7 +182,7 @@ const DashboardScreen = ({route, navigation}) => {
       );
 
       setTimeout(() => {
-        setUserPoints(userPoints + earnedPoints);
+        setPointsPerLvl(pointsPerLvl + earnedPoints); //!!!!!!!!!!!!!!!!
       }, 2500);
     }
     if (prevValue !== progressBarWidth) {
@@ -182,29 +200,145 @@ const DashboardScreen = ({route, navigation}) => {
   });
   /** Animations **/
 
-  /** Checkk login **/
-  const checkIsLoggedIn = () => {
-    CookieManager.clearAll().then(succcess => {
-      console.log('CookieManager.clearAll from webkit-view =>', succcess);
-    });
+  const xp_earned = 250;
+  //
+  const [pointsPerLvl, setPointsPerLvl] = useState(xp_earned);
+  // const [finalPoints, setFinalPoints] = useState(pointsPerLvl);
+  const [lvlPoints, setLvlPoints] = useState(500);
+  const [lvlData, setLvlData] = useState({
+    currentLvl: 'Level 0',
+    nextLvl: 'Level 1',
+    prev_lvl_points: 0,
+    current_lvl_points: 500,
+    next_lvl_points: 1000,
+  });
 
-    // axios
-    //   .post('https://hemd.hudatascience.nl/mypractice/api/v1/check_login', {
-    //     app: 'inpraktijk_game',
-    //   })
-    //   .then(loggedIn =>
-    //     console.log(
-    //       'loggedIn',
-    //       loggedIn.data,
-    //       'is_logged_in',
-    //       loggedIn.data.is_logged_in,
-    //     ),
-    //   );
+  useEffect(() => {
+    let lvl;
+    if (pointsPerLvl < 500) {
+      lvl = {
+        currentLvl: 'Level 0',
+        nextLvl: 'Level 1',
+        prev_lvl_points: 0,
+        current_lvl_points: 500,
+        next_lvl_points: 1000,
+      };
+    } else if (pointsPerLvl >= 500 && pointsPerLvl < 1000) {
+      lvl = {
+        currentLvl: 'Level 1',
+        nextLvl: 'Level 2',
+        prev_lvl_points: 500,
+        current_lvl_points: 1000,
+        next_lvl_points: 2000,
+      };
+    } else if (pointsPerLvl >= 1000 && pointsPerLvl < 2000) {
+      lvl = {
+        currentLvl: 'Level 2',
+        nextLvl: 'Level 3',
+        prev_lvl_points: 1000,
+        current_lvl_points: 2000,
+        next_lvl_points: 3000,
+      };
+    } else if (pointsPerLvl >= 2000 && pointsPerLvl < 3000) {
+      lvl = {
+        currentLvl: 'Level 3',
+        nextLvl: 'Level 4',
+        prev_lvl_points: 2000,
+        current_lvl_points: 3000,
+        next_lvl_points: 4000,
+      };
+    }
+    setLvlData(lvl);
+  }, [pointsPerLvl]);
+  //
+  // useEffect(() => {
+  //   if (pointsPerLvl > lvlPoints) {
+  //     const restPoints = pointsPerLvl % lvlPoints;
+  //     // console.log(restPoints);
+  //     setPointsPerLvl(lvlData.current_lvl_points); // set next lvl points
+  //     setTimeout(() => {
+  //       setPointsPerLvl(lvlData.prev_lvl_points);
+  //       setLvlPoints(lvlData.next_lvl_points);
+  //       setTimeout(() => {
+  //         setPointsPerLvl(lvlData.current_lvl_points + restPoints);
+  //         setFinalPoints(lvlData.current_lvl_points + restPoints);
+  //       }, 500);
+  //     }, 500);
+  //   }
+  // }, [lvlData, lvlPoints, pointsPerLvl]);
+
+  const [displayScorePoints, setDisplayScorePoints] = useState({
+    currentProcent: 0,
+    allProcent: 100,
+  });
+
+  useEffect(() => {
+    if (pointsPerLvl > lvlPoints) {
+      setDisplayScorePoints({
+        currentProcent: 100,
+        allProcent: 100,
+      });
+      setTimeout(() => {
+        setDisplayScorePoints({
+          currentProcent: 0,
+          allProcent: 100,
+        });
+        setTimeout(() => {
+          const restPoints = pointsPerLvl % lvlData.current_lvl_points;
+          const gap_between_levels =
+            lvlData.next_lvl_points - lvlData.current_lvl_points;
+          // console.log(lvlPoints);
+          // console.log('lvlData', lvlData);
+          // console.log('pointsPerLvl', pointsPerLvl);
+          // console.log('restPoints', restPoints);
+          setDisplayScorePoints({
+            currentProcent: gap_between_levels / restPoints,
+            allProcent: 100,
+          });
+          setLvlPoints(lvlData.next_lvl_points);
+        }, 500);
+      }, 500);
+    } else {
+      // console.log('pointsPerLvl');
+      console.log(pointsPerLvl - lvlData.prev_lvl_points);
+      console.log(
+        'result',
+        (pointsPerLvl - lvlData.prev_lvl_points) /
+          ((lvlData.current_lvl_points - lvlData.prev_lvl_points) / 100),
+      );
+      setDisplayScorePoints({
+        currentProcent:
+          (pointsPerLvl - lvlData.prev_lvl_points) /
+          ((lvlData.current_lvl_points - lvlData.prev_lvl_points) / 100),
+        allProcent: 100,
+      });
+    }
+  }, [lvlPoints, pointsPerLvl]);
+
+  // setTimeout(() => {
+  //   const resultProgress = pointsPerLvl / (lvlData.next_lvl_points / 100);
+  //   console.log('resultProgress', resultProgress);
+  //   setDisplayScorePoints({
+  //     currentProcent: resultProgress,
+  //     allProcent: 100,
+  //   });
+  // }, 500);
+
+  const rightBallHandler = () => {
+    setPointsPerLvl(prev => prev + 150);
+    // const resultInDisplay = (pointsPerLvl + 150) / (lvlPoints / 100);
+    // setDisplayScorePoints({currentProcent: resultInDisplay, allProcent: 100});
+    // setFinalPoints(prev => prev + 150);
+
+    // inPraktikAPI.checkLogin().then(res => console.log('tete', ));
+    // CookieManager.clearAll().then(succcess => {
+    //   console.log('CookieManager.clearAll from webkit-view =>', succcess);
+    // });
   };
-  /** Checkk login **/
 
   return (
-    <BackgroundImage>
+    <BackgroundImage
+      source={require('../../../assets/backgrounds/Home-BG.jpg')}>
       <ScrollView>
         <View style={styles.header}>
           <View style={styles.headerContent}>
@@ -230,42 +364,81 @@ const DashboardScreen = ({route, navigation}) => {
         <View style={styles.mainContent}>
           {/**/}
           <Animated.View style={[styles.rowOfBalls, styleFromTopBallsAnim]}>
-            <TouchableOpacity
+            <TouchableWithoutFeedback
               activeOpacity={0.9}
               onPress={() =>
                 navigation.navigate('WaitRoom', {sharedItem: data[0]})
               }>
-              <SharedElement id={'leftMenuImage'}>
-                <Image
+              <SharedElement id={`item.${data[0].id}.icon`}>
+                <View
                   style={{
                     width: 125,
                     height: 125,
-                    resizeMode: 'cover',
                     borderRadius: 125,
-                  }}
-                  source={{uri: data[0].image}}
-                />
+                    backgroundColor: '#5466fc',
+                    overflow: 'hidden',
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: 'Ubuntu-Bold',
+                      fontSize: 12,
+                      color: '#ffffff',
+                      textAlign: 'center',
+                      top: 30,
+                    }}>
+                    Wachtkamer
+                  </Text>
+                  <FontAwesomeIcon
+                    icon={data[0].icon}
+                    style={{
+                      position: 'absolute',
+                      bottom: -5,
+                      alignSelf: 'center',
+                    }}
+                    size={85}
+                    color="#ffffff"
+                  />
+                </View>
               </SharedElement>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
               onPress={
-                checkIsLoggedIn
+                rightBallHandler
+                // () => setUserPoints(430)
                 // navigation.push('FreePlay', {sharedItem: data[1]})
               }>
-              <View style={styles.item}>
-                <SharedElement id={'rightMenuImage'}>
-                  <Image
+              <SharedElement id={'rightMenuImage'}>
+                <View
+                  style={{
+                    width: 125,
+                    height: 125,
+                    borderRadius: 125,
+                    backgroundColor: '#00084b',
+                    overflow: 'hidden',
+                  }}>
+                  <Text
                     style={{
-                      width: 125,
-                      height: 125,
-                      resizeMode: 'cover',
-                      borderRadius: 125,
+                      fontFamily: 'Ubuntu-Bold',
+                      fontSize: 12,
+                      color: '#ffffff',
+                      textAlign: 'center',
+                      top: 85,
+                    }}>
+                    Free Play
+                  </Text>
+                  <FontAwesomeIcon
+                    icon={data[1].icon}
+                    style={{
+                      position: 'absolute',
+                      top: -5,
+                      alignSelf: 'center',
                     }}
-                    source={{uri: data[1].image}}
+                    size={85}
+                    color="#ffffff"
                   />
-                </SharedElement>
-              </View>
-            </TouchableOpacity>
+                </View>
+              </SharedElement>
+            </TouchableWithoutFeedback>
           </Animated.View>
           <View style={styles.userLevelInfo}>
             <Animated.Text style={[styles.pointsText, stylePointsAnimation]}>
@@ -276,20 +449,22 @@ const DashboardScreen = ({route, navigation}) => {
             />
             <Animated.View style={styleUserProgressAnim}>
               <View style={styles.levelTextRow}>
-                <Text style={styles.actualLvl}>Level 8</Text>
-                <Text style={styles.nextLvl}>Level 9</Text>
+                <Text style={styles.actualLvl}>{lvlData.currentLvl}</Text>
+                <Text style={styles.nextLvl}>{lvlData.nextLvl}</Text>
               </View>
               <View style={styles.userProgress}>
                 <ProgressBar
                   height={18}
-                  step={userPoints}
-                  steps={500}
+                  step={displayScorePoints.currentProcent}
+                  steps={displayScorePoints.allProcent}
                   backgroundColor={['#5466fc', '#5466fc']}
                   userLvl
                   setProgressBarWidth={setProgressBarWidth}
                 />
               </View>
-              <Text style={styles.pointsInLvl}>{userPoints}/500</Text>
+              <Text style={styles.pointsInLvl}>
+                {pointsPerLvl}/{lvlPoints}
+              </Text>
             </Animated.View>
             {/**/}
             <Animated.View style={styleFromBottomAnim}>

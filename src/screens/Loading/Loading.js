@@ -1,165 +1,121 @@
 import React, {useEffect, useState} from 'react';
-import {Linking, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import WebView from 'react-native-webview';
 import CookieManager from '@react-native-cookies/cookies';
-import axios from 'axios';
 import {ProgressBar} from '../../components';
-
-// Write to Async Storage
-// const storeData = async value => {
-//   try {
-//     await AsyncStorage.setItem('PHPSESSID_ASYNC_STORAGE', value);
-//   } catch (e) {
-//     // saving error
-//   }
-// };
-//
-// // Get from Async Storage
-// const getData = async () => {
-//   try {
-//     const value = await AsyncStorage.getItem('PHPSESSID_ASYNC_STORAGE');
-//     if (value !== null) {
-//       // value previously stored
-//       return value;
-//     }
-//   } catch (e) {
-//     // error reading value
-//   }
-// };
+import {storeData} from '../../helpers/helpersFunctions';
+import {useDispatch, useSelector} from 'react-redux';
+import {checkIsLogedInTC} from '../../redux/reducers/auth-reducer';
 
 const LoadingScreen = ({navigation}) => {
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+
+  const dispatch = useDispatch();
+
+  const {height} = useWindowDimensions();
+
   const [showLogin, setShowLogin] = useState(false);
-  const [isLogged, setIsLogged] = useState(false);
   const [webViewVisible, setWebViewVisible] = useState(false);
-  const [webViewLoad, setWebViewLoad] = useState(true);
+  const [showLoader, setShowLoader] = useState(true);
 
   /** Progress Bar Loader **/
   const [index, setIndex] = useState(0);
+
   useEffect(() => {
-    let interval;
-    if (index === 0) {
-      axios
-        .post('https://hemd.hudatascience.nl/mypractice/api/v1/check_login', {
-          app: 'inpraktijk_game',
-        })
-        .then(res => {
-          setIsLogged(res.data.is_logged_in);
-          console.log('is_logged_in', res.data.is_logged_in);
-        });
-    } else if (index === 5 && !isLogged) {
+    dispatch(checkIsLogedInTC());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (index === 4 && !isLoggedIn) {
       setShowLogin(true);
-      setIndex(5);
-      return () => {
-        clearInterval(interval);
-      };
-    } else if (index === 5 && isLogged) {
+    } else if (index === 5 && isLoggedIn) {
       navigation.navigate('Main');
     }
 
-    interval = setInterval(() => {
-      if (index === 5) {
-        setIndex(5);
-      } else {
+    const intervalID = setInterval(() => {
+      if (index !== 5) {
         setIndex((index + 1) % (5 + 1));
       }
-    }, 1000);
+    }, 300);
     return () => {
-      clearInterval(interval);
+      clearInterval(intervalID);
     };
-
-    // if (index !== 5) {
-    //   const interval = setInterval(() => {
-    //     setIndex((index + 1) % (5 + 1));
-    //   }, 300);
-    //   return () => {
-    //     clearInterval(interval);
-    //   };
-    // } else {
-    //   // navigation.navigate('Main');
-    // }
-  }, [index, isLogged]);
+  }, [index, isLoggedIn, navigation]);
   /** Progress Bar Loader **/
+
+  const [indexLoad, setIndexLoad] = useState(0);
+
+  useEffect(() => {
+    if (webViewVisible && showLoader) {
+      const interval = setInterval(() => {
+        setIndexLoad((indexLoad + 1) % (5 + 1));
+      }, 300);
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [indexLoad, showLoader, webViewVisible]);
 
   const onPressHandler = () => {
     setWebViewVisible(true);
-    setWebViewLoad(false);
   };
-
-  // useEffect(() => {
-  //   CookieManager.clearByName("PHPSESSID").then(res => {
-  //     console.log('CookieManager.clearByName =>', res);
-  //   });
-  // }, []);
   /** Login **/
 
   const onLoadHandler = syntheticEvent => {
     const {nativeEvent} = syntheticEvent;
-    console.log('nativeEvent', nativeEvent);
-
-    // if (!isLogged) {
-    //   CookieManager.clearByName(
-    //     'https://hemd.hudatascience.nl/mypractice/#/',
-    //     'PHPSESSID',
-    //   ).then(success => {
-    //     console.log('CookieManager.clearByName =>', success);
-    //   });
-    // }
-
-    if (nativeEvent.url === 'https://hemd.hudatascience.nl/mypractice/#/') {
-      CookieManager.get('https://hemd.hudatascience.nl/mypractice/').then(
-        res => {
-          console.log('res', res.PHPSESSID);
-          if (res.PHPSESSID.value) {
-            navigation.navigate('Main');
-          }
-
-          // if (res) {
-          //   CookieManager.get('https://hemd.hudatascience.nl/mypractice/')
-          //     .then(response => {
-          //       console.log('CookieManager.get =>', response);
-          //       if (response.PHPSESSID.value === res.PHPSESSID.value) {
-          //         navigation.navigate('Main');
-          //       }
-          //     })
-          //     .catch(e => {
-          //       if (e) {
-          //         // storeData('');
-          //       }
-          //     });
-          // }
-        },
-      );
+    setShowLogin(true);
+    setShowLoader(nativeEvent.loading);
+    if (nativeEvent.url === 'https://hemd.hudatascience.nl/test/#/') {
+      CookieManager.get('https://hemd.hudatascience.nl/test').then(res => {
+        // console.log('res', res);
+        storeData('cookie', res);
+        if (res.PHPSESSID.value) {
+          dispatch(checkIsLogedInTC());
+          navigation.navigate('Main');
+        }
+      });
     }
   };
   /** Login **/
 
   return (
-    <View style={[styles.container, StyleSheet.absoluteFillObject]}>
-      {!showLogin && (
-        <View>
-          <ProgressBar step={index} steps={5} height={18} />
-        </View>
-      )}
-      {showLogin && webViewLoad && (
-        <View style={styles.btnLogin}>
-          <TouchableOpacity activeOpacity={0.8} onPress={onPressHandler}>
-            <Text style={styles.textLogin}>Login</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+    <View style={[StyleSheet.absoluteFillObject]}>
+      <View style={styles.container}>
+        {!showLogin && (
+          <View style={styles.progress}>
+            <ProgressBar step={index} steps={5} height={18} />
+          </View>
+        )}
+        {showLogin && !webViewVisible && (
+          <View style={styles.btnLogin}>
+            <TouchableOpacity activeOpacity={0.8} onPress={onPressHandler}>
+              <Text style={styles.textLogin}>Login</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
       {webViewVisible && (
         <WebView
-          useWebkit={false}
           startInLoadingState={true}
           renderLoading={() => (
-            <View>
-              <Text>LOADING</Text>
+            <View style={{bottom: height * 0.4, marginHorizontal: 50}}>
+              <ProgressBar step={indexLoad} steps={5} height={18} />
             </View>
           )}
           incognito={true}
+          onLoadStart={syntheticEvent => {
+            const {nativeEvent} = syntheticEvent;
+            setShowLogin(false);
+          }}
           onLoadEnd={onLoadHandler}
-          source={{uri: 'https://hemd.hudatascience.nl/mypractice'}}
+          source={{uri: 'https://hemd.hudatascience.nl/test'}}
         />
       )}
       {/*<WebView*/}
@@ -187,15 +143,18 @@ const LoadingScreen = ({navigation}) => {
 
 export default LoadingScreen;
 
+const {height, width} = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'flex-end',
     marginHorizontal: 50,
   },
+  progress: {
+    top: height * 0.6,
+  },
   btnLogin: {
+    top: height * 0.7,
     alignSelf: 'center',
-    marginTop: 50,
-    marginBottom: 150,
     width: 120,
     height: 58,
     backgroundColor: '#5466fc',

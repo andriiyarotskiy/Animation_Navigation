@@ -35,13 +35,13 @@ export const styles = StyleSheet.create({
   headerContent: {},
   leftBall: {
     position: 'absolute',
-    top: -35,
+    top: -45,
     left: -5,
   },
   // menuImage: {
-  //   width: 125,
-  //   height: 125,
-  //   // resizeMode: 'cover',
+  //   width: 100,
+  //   height: 100,
+  //   resizeMode: 'cover',
   //   borderRadius: 100,
   // },
   userBlock: {

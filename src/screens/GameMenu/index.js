@@ -1,5 +1,13 @@
-import React from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useEffect} from 'react';
+import {
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  UIManager,
+  View,
+} from 'react-native';
 import {SharedElement} from 'react-navigation-shared-element';
 import FastImage from 'react-native-fast-image';
 import {
@@ -8,88 +16,123 @@ import {
   CircleScoreBoard,
   GameTabBar,
 } from '../../components';
+import {useSelector} from 'react-redux';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+const routeSwitch = sectionType => {
+  switch (sectionType) {
+    case 'Psychosociale_Anamnese':
+      return 'PsychoSoc';
+    case 'Differentiaal_Diagnose_1':
+      return 'DifDiagnose';
+    case 'Differentiaal_Diagnose_2':
+      return 'Medical';
+  }
+};
 
 const GameMenuScreen = ({navigation, route}) => {
   const {item} = route.params;
+
+  const {sections} = useSelector(state => state.section);
+
+  const newSections = useSharedValue(760);
+
+  /** Animations **/
+  useEffect(() => {
+    if (sections.length) {
+      newSections.value = withSpring(0, {damping: 16});
+    }
+  }, [sections.length]);
+
+  const sectionsStyleAnim = useAnimatedStyle(() => {
+    return {
+      transform: [{translateY: newSections.value}],
+    };
+  });
+  /** Animations **/
 
   /** Animated Bottom Sheet **/
   const sheetRef = React.useRef(null);
   /** Animated Bottom Sheet **/
 
   return (
-    <BackgroundImage>
+    <BackgroundImage
+      source={require('../../../assets/backgrounds/Home-BG.jpg')}>
       {/*Pacient Card*/}
-      <View style={styles.pacientCard}>
-        <SharedElement id={`item.${item.id}.photo`}>
-          <View style={styles.pacientAva}>
-            <FastImage
-              style={{
-                width: 75,
-                height: 75,
-              }}
-              resizeMode={FastImage.resizeMode.contain}
-              source={{
-                uri: item.photo,
-                priority: FastImage.priority.low,
-                cache: FastImage.cacheControl.cacheOnly,
-              }}
-            />
+      <View style={styles.pacientWrapper}>
+        <View style={styles.pacientCard}>
+          <SharedElement id={`item.${item.uid}.photo`}>
+            <View style={styles.pacientAva}>
+              <FastImage
+                style={{
+                  width: 75,
+                  height: 75,
+                }}
+                resizeMode={FastImage.resizeMode.cover}
+                source={{
+                  uri: item.patient.profile_image_url,
+                  priority: FastImage.priority.low,
+                  cache: FastImage.cacheControl.cacheOnly,
+                }}
+              />
+            </View>
+          </SharedElement>
+          <View style={styles.pacientTextInfo}>
+            <SharedElement id={`item.${item.uid}.name`}>
+              <Text style={styles.nameStyle}>{item.patient.display_name}</Text>
+            </SharedElement>
+            <SharedElement id={`item.${item.uid}.subTitle`}>
+              <Text style={styles.subTitle}>
+                {item.patient.display_surname}
+              </Text>
+            </SharedElement>
           </View>
-        </SharedElement>
-        <View style={styles.pacientTextInfo}>
-          <SharedElement id={`item.${item.id}.name`}>
-            <Text style={styles.nameStyle}>{item.name}</Text>
-          </SharedElement>
-          <SharedElement id={`item.${item.id}.subTitle`}>
-            <Text style={styles.subTitle}>{item.subTitle}</Text>
-          </SharedElement>
-        </View>
-        <View style={styles.scoreBoard}>
-          <CircleScoreBoard progress={10} />
+          <View style={styles.scoreBoard}>
+            <CircleScoreBoard progress={10} />
+          </View>
         </View>
       </View>
+
       {/*Pacient Card*/}
       {/*Header*/}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>
-          Maria Du Soleil is je volgende patient.
-        </Text>
-        <Text style={styles.headerSubtitle}>
-          Je doorloopt onderstaande stappen om tot een diagnose en behandeling
-          te komen.
-        </Text>
-      </View>
-      {/*Header*/}
-      {/*Game Menu*/}
-      <View style={styles.menuList}>
-        <TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
-          <View style={styles.menuItem}>
-            <Text style={styles.menuText}>Dossier</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('GameStack', {screen: 'PsychoSoc'})
-          }>
-          <View style={styles.menuItem}>
-            <Text style={styles.menuText}>Psychosociale Anamnese</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('GameStack', {screen: 'Medical'})}>
-          <View style={styles.menuItem}>
-            <Text style={styles.menuText}>Medische Anamnese</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('GameStack', {screen: 'DifDiagnose'})
-          }>
-          <View style={styles.menuItem}>
-            <Text style={styles.menuText}>Differentiaal Diagnose</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+      <ScrollView>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>
+            Maria Du Soleil is je volgende patient.
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            Je doorloopt onderstaande stappen om tot een diagnose en behandeling
+            te komen.
+          </Text>
+        </View>
+        {/*Header*/}
+        {/*Game Menu*/}
+        <View style={styles.menuList}>
+          <TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
+            <View style={styles.menuItem}>
+              <Text style={styles.menuText}>Dossier</Text>
+            </View>
+          </TouchableOpacity>
+          <Animated.View style={sectionsStyleAnim}>
+            {sections.map(section => (
+              <TouchableOpacity
+                key={section.uid}
+                onPress={() =>
+                  navigation.navigate('GameStack', {
+                    screen: routeSwitch(section.type),
+                  })
+                }>
+                <View style={styles.menuItem}>
+                  <Text style={styles.menuText}>{section.display_name}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </Animated.View>
+        </View>
+      </ScrollView>
       {/*Game Menu*/}
       <AnimatedBottomSheet sheetRef={sheetRef} content={'Lorem'.repeat(30)} />
       <GameTabBar />
@@ -109,14 +152,17 @@ export default GameMenuScreen;
 
 const styles = StyleSheet.create({
   // PACIENT CARD
+  pacientWrapper: {
+    width: '100%',
+    backgroundColor: '#fff',
+    height: 100,
+  },
   pacientCard: {
-    backgroundColor: '#aeaeae',
     position: 'absolute',
     zIndex: 1,
     top: 0,
     width: '90%',
-    height: 100,
-    marginHorizontal: '5%',
+    alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -146,9 +192,7 @@ const styles = StyleSheet.create({
   },
   // PACIENT CARD
   header: {
-    marginTop: 100,
     paddingTop: 25,
-    paddingBottom: 50,
     marginHorizontal: 40,
   },
   headerTitle: {
@@ -165,8 +209,8 @@ const styles = StyleSheet.create({
   },
   // Menu Buttons
   menuList: {
+    paddingTop: 50,
     flex: 1,
-    // backgroundColor: 'pink',
   },
   menuItem: {
     backgroundColor: '#5466fc',

@@ -9,18 +9,18 @@ import MailIcon from './icons/AI_mail.svg';
 const renderTabIcons = (label, focused) => {
   switch (label) {
     case 'Home':
-      return <HomeIcon width={35} height={35} />;
-    case 'Wait Room':
+      return <HomeIcon width={25} height={25} />;
+    case 'Wachtkamer':
       return (
-        <FontAwesomeIcon icon={faClinicMedical} size={35} color="#2130b1" />
+        <FontAwesomeIcon icon={faClinicMedical} size={25} color="#2130b1" />
       );
     // return <Test width={50} height={50} fill={'#000'} />;
     case 'Vrienden':
-      return <UserAI width={35} height={35} />;
+      return <UserAI width={27} height={24} />;
     case 'Berichten':
-      return <MailIcon style={{bottom: -5}} width={35} height={35} />;
-    case 'Free play':
-      return <FontAwesomeIcon icon={faMedal} size={25} color="#2130b1" />;
+      return <MailIcon /*style={{bottom: -5}}*/ width={24} height={20} />;
+    case 'Free Play':
+      return <FontAwesomeIcon icon={faMedal} size={21} color="#2130b1" />;
     default:
       return null;
   }
@@ -41,10 +41,10 @@ const TabBar = props => {
   const {navigation, sharedItem} = props;
   const routesState = [
     {nameScreen: 'Dashboard', label: 'Home'},
-    {nameScreen: 'WaitRoom', label: 'Wait Room'},
+    {nameScreen: 'WaitRoom', label: 'Wachtkamer'},
     {nameScreen: 'Test', label: 'Vrienden'},
     {nameScreen: 'TestAnimation', label: 'Berichten'},
-    {nameScreen: 'FreePlay', label: 'Free play'},
+    {nameScreen: 'FreePlay', label: 'Free Play'},
   ];
   return (
     <View style={styles.container}>
@@ -52,9 +52,7 @@ const TabBar = props => {
         <Tab
           key={Math.random().toString()}
           title={tab.label}
-          onPress={() =>
-            navigation.navigate(tab.nameScreen, {sharedItem: sharedItem})
-          }
+          onPress={() => navigation.navigate(tab.nameScreen, {sharedItem})}
         />
       ))}
     </View>
@@ -65,17 +63,23 @@ export default TabBar;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#aeaeae',
-    // flex: 1,
-    height: 100,
+    backgroundColor: '#fff',
+    height: 65,
+    paddingVertical: 10,
+    paddingHorizontal: 25,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   iconContainer: {
-    // backgroundColor: 'pink',
+    height: '100%',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   routeName: {
+    fontFamily: 'Roboto-Bold',
+    letterSpacing: 0.6,
+    color: '#2130b1',
     fontSize: 10,
     textAlign: 'center',
   },
